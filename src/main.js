@@ -34,7 +34,8 @@ async function init() {
   const partidas = (await partidaListRes.text())
     .split(/\r?\n/)
     .map((line) => line.trim())
-    .filter(Boolean);
+    .filter(Boolean)
+    .sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
 
   partidaSelect.innerHTML = partidas
     .map((partida) => `<option value="${escapeHtml(partida)}">${escapeHtml(partida)}</option>`)
@@ -66,12 +67,11 @@ function runSearch() {
   }
 
   const suffix = (suffixInput.value.trim().toUpperCase() || 'X');
-  const sameNumber = entries
-    .filter((entry) => Number.parseInt(entry.number, 10) === number)
-    .sort((a, b) => a.suffix.localeCompare(b.suffix));
-
-  const exact = sameNumber.find((entry) => entry.suffix.toUpperCase() === suffix);
-  const entry = exact || sameNumber[0];
+  const exact = entries.find((entry) => (
+    Number.parseInt(entry.number, 10) === number &&
+    entry.suffix.toUpperCase() === suffix
+  ));
+  const entry = exact || findClosestEntry(entries, number, suffix);
 
   if (!entry) {
     statusText.textContent = 'No se encontró la vivienda';
@@ -81,12 +81,40 @@ function runSearch() {
   }
 
   currentEntry = entry;
-  statusText.textContent = exact || suffix === 'X' ? '' : 'No existe esa letra; se muestra la variante base';
+  statusText.textContent = exact ? '' : 'No hay coincidencia exacta; se muestran números cercanos';
   const displayNumber = String(Number.parseInt(entry.number, 10));
   const displaySuffix = entry.suffix === 'X' ? '' : entry.suffix;
   resultTitle.textContent = `PTDA. ${partidaDisplay} ${displayNumber}${displaySuffix}`;
   resultCoords.textContent = `${entry.lat}, ${entry.lng}`;
   resultCard.classList.remove('hidden');
+}
+
+function findClosestEntry(entries, targetNumber, targetSuffix) {
+  if (!entries.length) return null;
+
+  return [...entries].sort((a, b) => {
+    const numberA = Number.parseInt(a.number, 10);
+    const numberB = Number.parseInt(b.number, 10);
+    const distanceA = Math.abs(numberA - targetNumber);
+    const distanceB = Math.abs(numberB - targetNumber);
+
+    if (distanceA !== distanceB) return distanceA - distanceB;
+
+    const suffixScoreA = getSuffixScore(a.suffix, targetSuffix);
+    const suffixScoreB = getSuffixScore(b.suffix, targetSuffix);
+    if (suffixScoreA !== suffixScoreB) return suffixScoreA - suffixScoreB;
+
+    if (numberA !== numberB) return numberA - numberB;
+
+    return a.suffix.localeCompare(b.suffix, 'es', { sensitivity: 'base' });
+  })[0];
+}
+
+function getSuffixScore(entrySuffix, targetSuffix) {
+  const normalizedSuffix = entrySuffix.toUpperCase();
+  if (normalizedSuffix === targetSuffix) return 0;
+  if (normalizedSuffix === 'X') return 1;
+  return 2;
 }
 
 function buildMapsUrl(entry) {
