@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b0b10" />
+    <title>Crevi Loc Web</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div id="app" class="app theme-dark">
+      <header class="topbar">
+        <div>
+          <h1>Crevi Loc Web</h1>
+          <p>Busca una partida y abre la ubicación exacta en Google Maps.</p>
+        </div>
+        <label class="theme-toggle">
+          <span id="themeLabel">Tema oscuro</span>
+          <input id="themeSwitch" type="checkbox" />
+        </label>
+      </header>
+
+      <main class="panel">
+        <label class="field">
+          <span>Partida</span>
+          <select id="partidaSelect"></select>
+        </label>
+
+        <label class="field">
+          <span>Número</span>
+          <input id="numberInput" type="number" inputmode="numeric" placeholder="Ej. 6" />
+        </label>
+
+        <label class="field">
+          <span>Letra (opcional)</span>
+          <input id="suffixInput" type="text" maxlength="3" placeholder="Ej. A" />
+        </label>
+
+        <button id="searchButton" class="primary">Buscar</button>
+        <p id="statusText" class="status"></p>
+
+        <section id="resultCard" class="result hidden">
+          <h2 id="resultTitle"></h2>
+          <p id="resultCoords"></p>
+          <div class="actions">
+            <button id="openMapsButton" class="primary">Abrir en Maps</button>
+            <button id="shareButton" class="secondary">Compartir</button>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
