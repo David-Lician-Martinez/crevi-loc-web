@@ -109,6 +109,8 @@ async function shareCurrent() {
 }
 
 function applyTheme(dark) {
+  document.documentElement.classList.toggle('theme-dark', dark);
+  document.documentElement.classList.toggle('theme-light', !dark);
   document.body.classList.toggle('theme-dark', dark);
   document.body.classList.toggle('theme-light', !dark);
   app.classList.toggle('theme-dark', dark);
