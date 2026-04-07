@@ -1,8 +1,8 @@
 {
   "versionCode": 1,
   "versionName": "1.0.0",
-  "apkUrl": "https://crevi-loc-web.pages.dev/downloads/crevi-loc-v1.0.0.apk",
-  "notes": "Mejoras de búsqueda y correcciones",
+  "apkUrl": "https://crevi-loc-web.pages.dev/downloads/crevi-loc.apk?v=1",
+  "notes": "Primera version publica de la aplicacion",
   "minSupportedVersionCode": 1,
   "publishedAt": "2026-04-07T14:30:00Z"
 }

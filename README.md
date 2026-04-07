@@ -1,23 +1,40 @@
 # Crevi Loc Web
 
-Versión web estática y móvil de Crevi Loc, preparada para subir a GitHub y desplegar directamente en Cloudflare Pages sin backend.
+Aplicacion web estatica para buscar partidas y abrir la ubicacion exacta en Google Maps. Esta preparada para desplegarse directamente en Cloudflare Pages sin backend.
 
-## Qué hace
+## Caracteristicas
 
-- Busca por partida + número + letra opcional
-- Redirige a Google Maps en el móvil
-- Permite compartir la ubicación
-- Guarda el tema claro/oscuro en el navegador
-- Funciona como sitio estático
+- Busqueda por partida, numero y letra opcional
+- Modo claro y oscuro con preferencia guardada en el navegador
+- Resultado alternativo con direccion cercana cuando no hay coincidencia exacta
+- Boton de compartir y apertura directa en Google Maps
+- Endpoint estatico de actualizaciones para la APK en `update.json`
+
+## Stack
+
+- Vite
+- JavaScript vanilla
+- CSS plano
+- Cloudflare Pages
 
 ## Estructura
 
-- `public/partidas.clean.json` → dataset limpio
-- `public/partidas.list.txt` → listado visible de partidas
-- `index.html` → shell principal
-- `styles.css` → estilos
-- `src/main.js` → lógica de la app
-- `public/_redirects` → fallback SPA para Cloudflare Pages
+```text
+.
+|-- public/
+|   |-- downloads/         # Aqui podras anadir la APK
+|   |-- partidas.clean.json
+|   |-- partidas.list.txt
+|   |-- update.json
+|   `-- _redirects
+|-- src/
+|   |-- main.js
+|   `-- styles.css
+|-- index.html
+|-- package.json
+|-- vite.config.js
+`-- wrangler.toml
+```
 
 ## Desarrollo local
 
@@ -26,46 +43,43 @@ npm install
 npm run dev
 ```
 
-## Build local
+## Build
 
 ```bash
-npm install
 npm run build
 ```
 
-La salida queda en `dist/`.
+La salida se genera en `dist/`.
 
-## Deploy en Cloudflare Pages
+## Despliegue en Cloudflare Pages
 
-### Opción simple desde GitHub
+Configura el proyecto con estos valores:
 
-1. Sube **esta carpeta** como repositorio a GitHub.
-2. En Cloudflare Pages, crea un proyecto nuevo conectado a ese repo.
-3. Usa esta configuración:
-   - Framework preset: `Vite`
-   - Build command: `npm run build`
-   - Build output directory: `dist`
-4. Despliega.
+- Framework preset: `Vite`
+- Production branch: `main`
+- Build command: `npm run build`
+- Build output directory: `dist`
+- Node version: `20`
 
-### Opción arrastrando build manual
+No hacen falta variables de entorno ni backend.
 
-1. Ejecuta `npm install && npm run build`
-2. Sube la carpeta `dist/` a Cloudflare Pages.
+## Actualizaciones de la APK
 
-## Notas
+El endpoint publico de actualizacion es:
 
-- No hay backend ni base de datos.
-- Toda la búsqueda ocurre en cliente.
-- Está pensada para abrirse desde móvil.
-- Google Maps se abre con URL directa usando coordenadas.
+`https://crevi-loc-web.pages.dev/update.json`
 
-## Plug and play
+La APK debe ir en:
 
-El objetivo de esta carpeta es que puedas llevártela tal cual, subirla a GitHub, conectarla a Cloudflare Pages y desplegarla sin tener que reconstruir nada del proyecto Android.
+`public/downloads/crevi-loc.apk`
 
-## Archivos extra para dejarlo cerrado
+Flujo recomendado de publicacion:
 
-- `CLOUDFLARE_PAGES.md` → configuración exacta para Pages
-- `DEPLOY_CHECKLIST.md` → checklist rápida de puesta en producción
-- `.nvmrc` y `.node-version` → Node 20 fijado
-- `wrangler.toml` → metadata mínima compatible con Pages
+1. Sustituir `public/downloads/crevi-loc.apk`
+2. Actualizar `public/update.json`
+3. Hacer `git add`, `git commit` y `git push`
+4. Esperar al nuevo despliegue de Cloudflare Pages
+
+## Licencia
+
+Este proyecto se distribuye bajo la licencia MIT. Consulta [LICENSE](./LICENSE).

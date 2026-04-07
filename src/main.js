@@ -1,3 +1,5 @@
+import './styles.css';
+
 const app = document.getElementById('app');
 const themeSwitch = document.getElementById('themeSwitch');
 const themeLabel = document.getElementById('themeLabel');
@@ -61,12 +63,12 @@ function runSearch() {
 
   const number = Number.parseInt(numberInput.value.trim(), 10);
   if (!partidaDisplay || Number.isNaN(number)) {
-    statusText.textContent = 'Introduce una partida válida y un número';
+    statusText.textContent = 'Introduce una partida valida y un numero';
     resultCard.classList.add('hidden');
     return;
   }
 
-  const suffix = (suffixInput.value.trim().toUpperCase() || 'X');
+  const suffix = suffixInput.value.trim().toUpperCase() || 'X';
   const exact = entries.find((entry) => (
     Number.parseInt(entry.number, 10) === number &&
     entry.suffix.toUpperCase() === suffix
@@ -74,14 +76,14 @@ function runSearch() {
   const entry = exact || findClosestEntry(entries, number, suffix);
 
   if (!entry) {
-    statusText.textContent = 'No se encontró la vivienda';
+    statusText.textContent = 'No se encontro la vivienda';
     resultCard.classList.add('hidden');
     currentEntry = null;
     return;
   }
 
   currentEntry = entry;
-  statusText.textContent = exact ? '' : 'No hay coincidencia exacta; se muestran números cercanos';
+  statusText.textContent = exact ? '' : 'No hay coincidencia exacta; se muestran numeros cercanos';
   const displayNumber = String(Number.parseInt(entry.number, 10));
   const displaySuffix = entry.suffix === 'X' ? '' : entry.suffix;
   resultTitle.textContent = `PTDA. ${partidaDisplay} ${displayNumber}${displaySuffix}`;
@@ -132,7 +134,7 @@ async function shareCurrent() {
     await navigator.share({ text });
   } else {
     await navigator.clipboard.writeText(text);
-    statusText.textContent = 'Ubicación copiada al portapapeles';
+    statusText.textContent = 'Ubicacion copiada al portapapeles';
   }
 }
 

@@ -1,0 +1,230 @@
+:root {
+  --bg: #000000;
+  --panel: #1a2038;
+  --panel-border: #3e4a78;
+  --text: #f2f5ff;
+  --muted: #b8c2ea;
+  --field-bg: #232b47;
+  --field-border: #4e5e91;
+  --primary-a: #6e7bff;
+  --primary-b: #9d5cff;
+  --secondary-bg: #2b3558;
+  --secondary-border: #55679d;
+  --secondary-text: #f2f5ff;
+  --danger: #ff9db1;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+body {
+  padding: 20px;
+}
+
+.app {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.topbar {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.topbar h1 {
+  margin: 0 0 8px;
+  font-size: 1.8rem;
+}
+
+.topbar p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  white-space: nowrap;
+  padding-top: 10px;
+}
+
+.theme-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 28px;
+  padding: 22px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+.field {
+  display: block;
+  margin-bottom: 16px;
+}
+
+.field span {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+
+input,
+select,
+button {
+  font: inherit;
+}
+
+input:not([type="checkbox"]):not([type="radio"]),
+select {
+  width: 100%;
+  height: 52px;
+  border-radius: 18px;
+  border: 1px solid var(--field-border);
+  background: var(--field-bg);
+  color: var(--text);
+  padding: 0 14px;
+}
+
+.theme-toggle input[type="checkbox"] {
+  position: absolute;
+  inset: 0;
+  width: 52px;
+  height: 32px;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.theme-switch-slider {
+  position: relative;
+  width: 52px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--secondary-bg);
+  border: 1px solid var(--secondary-border);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.theme-switch-slider::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.theme-toggle input[type="checkbox"]:checked + .theme-switch-slider {
+  background: linear-gradient(90deg, var(--primary-a), var(--primary-b));
+  border-color: transparent;
+}
+
+.theme-toggle input[type="checkbox"]:checked + .theme-switch-slider::after {
+  transform: translateX(20px);
+}
+
+.theme-toggle input[type="checkbox"]:focus-visible + .theme-switch-slider {
+  outline: 2px solid var(--primary-a);
+  outline-offset: 3px;
+}
+
+button {
+  width: 100%;
+  height: 56px;
+  border: 0;
+  border-radius: 22px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+button.primary {
+  background: linear-gradient(90deg, var(--primary-a), var(--primary-b));
+  color: #fff;
+}
+
+button.secondary {
+  background: var(--secondary-bg);
+  color: var(--secondary-text);
+  border: 1px solid var(--secondary-border);
+}
+
+.status {
+  min-height: 24px;
+  color: var(--danger);
+}
+
+.result.hidden {
+  display: none;
+}
+
+.result h2 {
+  margin: 0 0 8px;
+}
+
+.result p {
+  margin: 0 0 16px;
+  color: var(--muted);
+}
+
+.actions {
+  display: grid;
+  gap: 10px;
+}
+
+html.theme-light,
+body.theme-light {
+  --bg: #ffffff;
+  --panel: #eef2ff;
+  --panel-border: #c8d2ff;
+  --text: #1a2240;
+  --muted: #5d6888;
+  --field-bg: #fbfcff;
+  --field-border: #ccd7ff;
+  --secondary-bg: #dde5ff;
+  --secondary-border: #b7c6ff;
+  --secondary-text: #33406a;
+  --danger: #a63a52;
+}
+
+@media (max-width: 640px) {
+  body {
+    padding: 16px;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .theme-toggle {
+    padding-top: 0;
+    justify-content: space-between;
+  }
+}
