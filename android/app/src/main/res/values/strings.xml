@@ -10,4 +10,10 @@
     <string name="update_download_started">Descargando actualización…</string>
     <string name="update_download_error">No se pudo iniciar la actualización</string>
     <string name="update_install_error">No se pudo abrir el instalador de la actualización</string>
+    <string name="access_web">Accede a la Web</string>
+    <string name="download_web_qr">Descarga el QR Web</string>
+    <string name="qr_download_title">QR de Crevi Loc Web</string>
+    <string name="qr_download_description">Descargando el QR de la web</string>
+    <string name="qr_download_started">Descarga del QR iniciada</string>
+    <string name="storage_permission_denied">No se concedió permiso para guardar el QR</string>
 </resources>

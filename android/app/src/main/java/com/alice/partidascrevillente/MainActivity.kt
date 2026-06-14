@@ -1,12 +1,18 @@
 package com.alice.partidascrevillente
 
+import android.Manifest
 import android.app.Dialog
+import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.view.View
 import android.view.Window
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -17,6 +23,7 @@ import android.widget.Spinner
 import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -53,10 +60,23 @@ class MainActivity : AppCompatActivity() {
     private lateinit var searchButton: Button
     private lateinit var openMapsButton: Button
     private lateinit var shareButton: Button
+    private lateinit var webLinksDivider: View
+    private lateinit var accessWebLink: TextView
+    private lateinit var downloadQrLink: TextView
 
     private var currentEntry: AddressEntry? = null
     private var currentPartidaDisplayName: String = ""
     private var isDarkTheme: Boolean = false
+
+    private val storagePermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            enqueueQrDownload()
+        } else {
+            Toast.makeText(this, R.string.storage_permission_denied, Toast.LENGTH_LONG).show()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,6 +103,14 @@ class MainActivity : AppCompatActivity() {
         searchButton = findViewById(R.id.searchButton)
         openMapsButton = findViewById(R.id.openMapsButton)
         shareButton = findViewById(R.id.shareButton)
+        webLinksDivider = findViewById(R.id.webLinksDivider)
+        accessWebLink = findViewById(R.id.accessWebLink)
+        downloadQrLink = findViewById(R.id.downloadQrLink)
+
+        accessWebLink.paintFlags = accessWebLink.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+        downloadQrLink.paintFlags = downloadQrLink.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+        accessWebLink.setOnClickListener { openWebDestination(WebDestinations.WEB_URL) }
+        downloadQrLink.setOnClickListener { downloadWebQr() }
 
         val savedDarkTheme = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             .getBoolean(KEY_DARK_THEME, false)
@@ -255,6 +283,9 @@ class MainActivity : AppCompatActivity() {
             resultCoords.setTextColor(Color.parseColor("#C6D0F5"))
             shareButton.background = ContextCompat.getDrawable(this, R.drawable.secondary_button_bg_dark)
             shareButton.setTextColor(Color.parseColor("#F2F5FF"))
+            webLinksDivider.setBackgroundColor(Color.parseColor("#3E4A78"))
+            accessWebLink.setTextColor(Color.parseColor("#B8C2EA"))
+            downloadQrLink.setTextColor(Color.parseColor("#B8C2EA"))
         } else {
             rootContainer.setBackgroundColor(Color.parseColor("#FFFFFF"))
             panelContainer.background = ContextCompat.getDrawable(this, R.drawable.panel_bg_light)
@@ -277,6 +308,9 @@ class MainActivity : AppCompatActivity() {
             resultCoords.setTextColor(Color.parseColor("#4E5B7D"))
             shareButton.background = ContextCompat.getDrawable(this, R.drawable.secondary_button_bg_light)
             shareButton.setTextColor(Color.parseColor("#33406A"))
+            webLinksDivider.setBackgroundColor(Color.parseColor("#C8D2FF"))
+            accessWebLink.setTextColor(Color.parseColor("#5D6888"))
+            downloadQrLink.setTextColor(Color.parseColor("#5D6888"))
         }
 
         updateSpinnerTextColor()
@@ -309,6 +343,40 @@ class MainActivity : AppCompatActivity() {
                 onPressed()
             }
             .start()
+    }
+
+    private fun openWebDestination(url: String) {
+        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+    }
+
+    private fun downloadWebQr() {
+        val needsLegacyPermission = Build.VERSION.SDK_INT <= Build.VERSION_CODES.P &&
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+
+        if (needsLegacyPermission) {
+            storagePermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        } else {
+            enqueueQrDownload()
+        }
+    }
+
+    private fun enqueueQrDownload() {
+        val request = DownloadManager.Request(Uri.parse(WebDestinations.QR_URL))
+            .setTitle(getString(R.string.qr_download_title))
+            .setDescription(getString(R.string.qr_download_description))
+            .setMimeType("image/png")
+            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+            .setDestinationInExternalPublicDir(
+                Environment.DIRECTORY_DOWNLOADS,
+                "crevi-loc-web-qr.png"
+            )
+
+        val downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+        downloadManager.enqueue(request)
+        Toast.makeText(this, R.string.qr_download_started, Toast.LENGTH_SHORT).show()
     }
 
     private fun runSearch() {

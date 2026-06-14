@@ -201,6 +201,15 @@
                             android:textStyle="bold" />
                     </LinearLayout>
 
+                    <View
+                        android:id="@+id/webLinksDivider"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="22dp"
+                        android:background="#C8D2FF" />
+
+                    <include layout="@layout/web_links" />
+
                 </LinearLayout>
 
             </LinearLayout>

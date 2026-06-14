@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/webLinksContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="12dp"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/accessWebLink"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_weight="1"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical|start"
+        android:text="@string/access_web"
+        android:textColor="#5D6888"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/downloadQrLink"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_weight="1"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical|end"
+        android:text="@string/download_web_qr"
+        android:textColor="#5D6888"
+        android:textStyle="bold" />
+
+</LinearLayout>

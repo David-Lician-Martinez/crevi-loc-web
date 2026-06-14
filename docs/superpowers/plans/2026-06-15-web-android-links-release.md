@@ -40,7 +40,8 @@
 - Modify: `android/app/build.gradle.kts`
 - Modify: `android/app/src/main/java/com/alice/partidascrevillente/MainActivity.kt`
 - Modify: `android/app/src/main/res/layout/activity_main.xml`
-- Create: `android/app/src/main/res/layout-sw341dp/activity_main.xml`
+- Create: `android/app/src/main/res/layout/web_links.xml`
+- Create: `android/app/src/main/res/layout-sw341dp/web_links.xml`
 - Modify: `android/app/src/main/res/values/strings.xml`
 - Modify: `android/app/src/test/java/com/alice/partidascrevillente/SearchEngineTest.kt`
 - Create: `android/app/src/test/java/com/alice/partidascrevillente/WebLinksTest.kt`

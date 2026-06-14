@@ -31,5 +31,14 @@ class SearchEngineTest {
             "penya_sendra",
             engine.normalizeInput("PEÑA SENDRA", "1", "").getOrThrow().partidaId
         )
+
+        assertEquals(
+            SearchStatus.EXACT_MATCH,
+            engine.search(engine.normalizeInput("CAÑADA JUANA", "1", "").getOrThrow()).status
+        )
+        assertEquals(
+            SearchStatus.EXACT_MATCH,
+            engine.search(engine.normalizeInput("PEÑA SENDRA", "1", "").getOrThrow()).status
+        )
     }
 }
