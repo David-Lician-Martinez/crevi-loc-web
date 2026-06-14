@@ -73,6 +73,7 @@ body {
 }
 
 .panel {
+  container-type: inline-size;
   background: var(--panel);
   border: 1px solid var(--panel-border);
   border-radius: 28px;
@@ -228,6 +229,19 @@ button.secondary {
   color: var(--text);
 }
 
+@container (max-width: 280px) {
+  .download-links {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .download-links a,
+  .download-links a:first-child,
+  .download-links a:last-child {
+    text-align: center;
+  }
+}
+
 html.theme-light,
 body.theme-light {
   --bg: #ffffff;
@@ -258,14 +272,4 @@ body.theme-light {
     justify-content: space-between;
   }
 
-  .download-links {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  .download-links a,
-  .download-links a:first-child,
-  .download-links a:last-child {
-    text-align: center;
-  }
 }
