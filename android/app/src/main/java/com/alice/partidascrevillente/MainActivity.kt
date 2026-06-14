@@ -24,6 +24,7 @@ import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -63,6 +64,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var webLinksDivider: View
     private lateinit var accessWebLink: TextView
     private lateinit var downloadQrLink: TextView
+    private lateinit var versionText: TextView
 
     private var currentEntry: AddressEntry? = null
     private var currentPartidaDisplayName: String = ""
@@ -106,6 +108,8 @@ class MainActivity : AppCompatActivity() {
         webLinksDivider = findViewById(R.id.webLinksDivider)
         accessWebLink = findViewById(R.id.accessWebLink)
         downloadQrLink = findViewById(R.id.downloadQrLink)
+        versionText = findViewById(R.id.versionText)
+        versionText.text = "v${BuildConfig.VERSION_NAME}"
 
         accessWebLink.paintFlags = accessWebLink.paintFlags or Paint.UNDERLINE_TEXT_FLAG
         downloadQrLink.paintFlags = downloadQrLink.paintFlags or Paint.UNDERLINE_TEXT_FLAG
@@ -255,7 +259,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startUpdate(updateInfo: UpdateInfo) {
-        updateManager.openUpdateInBrowser(updateInfo)
+        AlertDialog.Builder(this)
+            .setTitle(R.string.manual_install_title)
+            .setMessage(R.string.manual_install_message)
+            .setPositiveButton(R.string.manual_install_continue) { _, _ ->
+                updateManager.openUpdateInBrowser(updateInfo)
+            }
+            .show()
     }
 
     private fun applyTheme(dark: Boolean) {
@@ -286,6 +296,7 @@ class MainActivity : AppCompatActivity() {
             webLinksDivider.setBackgroundColor(Color.parseColor("#3E4A78"))
             accessWebLink.setTextColor(Color.parseColor("#B8C2EA"))
             downloadQrLink.setTextColor(Color.parseColor("#B8C2EA"))
+            versionText.setTextColor(Color.parseColor("#7F8AB5"))
         } else {
             rootContainer.setBackgroundColor(Color.parseColor("#FFFFFF"))
             panelContainer.background = ContextCompat.getDrawable(this, R.drawable.panel_bg_light)
@@ -311,6 +322,7 @@ class MainActivity : AppCompatActivity() {
             webLinksDivider.setBackgroundColor(Color.parseColor("#C8D2FF"))
             accessWebLink.setTextColor(Color.parseColor("#5D6888"))
             downloadQrLink.setTextColor(Color.parseColor("#5D6888"))
+            versionText.setTextColor(Color.parseColor("#7A849E"))
         }
 
         updateSpinnerTextColor()

@@ -15,9 +15,9 @@ const [gradle, mainActivity, manifest, activityLayout, compactLinks, regularLink
   read('../public/update.json'),
 ]);
 
-test('configures Android release 1.0.1 with version code 2', () => {
-  assert.match(gradle, /versionCode\s*=\s*2/u);
-  assert.match(gradle, /versionName\s*=\s*"1\.0\.1"/u);
+test('configures Android release 1.0.2 with version code 3', () => {
+  assert.match(gradle, /versionCode\s*=\s*3/u);
+  assert.match(gradle, /versionName\s*=\s*"1\.0\.2"/u);
 });
 
 test('includes web links that only stack on truly small Android screens', () => {
@@ -34,13 +34,24 @@ test('downloads the QR into the public Downloads directory', () => {
   assert.match(manifest, /WRITE_EXTERNAL_STORAGE/u);
 });
 
-test('publishes update metadata for Android 1.0.1', () => {
+test('publishes update metadata for Android 1.0.2', () => {
   const update = JSON.parse(updateJson);
-  assert.equal(update.versionCode, 2);
-  assert.equal(update.versionName, '1.0.1');
-  assert.equal(update.apkUrl, 'https://crevi-loc-web.pages.dev/downloads/crevi-loc.apk?v=2');
+  assert.equal(update.versionCode, 3);
+  assert.equal(update.versionName, '1.0.2');
+  assert.equal(update.apkUrl, 'https://crevi-loc-web.pages.dev/downloads/crevi-loc.apk?v=3');
   assert.equal(
     update.notes,
     'Añadidas partidas Cañada Juana y Peña Sendra y facilitación del acceso a la web',
   );
+});
+
+test('explains manual installation before downloading an update', () => {
+  assert.match(mainActivity, /AlertDialog\.Builder/u);
+  assert.match(mainActivity, /manual_install_message/u);
+  assert.match(strings, /Tras descargarse la aplicación, deberás instalarla manualmente desde la carpeta de Descargas\./u);
+});
+
+test('shows the current app version at the bottom right', () => {
+  assert.match(activityLayout, /@\+id\/versionText/u);
+  assert.match(mainActivity, /versionText\.text\s*=\s*"v\$\{BuildConfig\.VERSION_NAME\}"/u);
 });
