@@ -1,0 +1,18 @@
+version: 3.0.1
+apkFileName: base_1---70f4e7a8-4ce8-4de1-aea3-586973bf0fc0
+usesFramework:
+  ids:
+  - 1
+sdkInfo:
+  minSdkVersion: 8
+  targetSdkVersion: 21
+versionInfo:
+  versionCode: 205
+  versionName: 2.05
+resourcesInfo:
+  packageId: 127
+  keepRawValues: true
+doNotCompress:
+- arsc
+- jpg
+- png

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Partidas Crevillente</string>
+    <string name="update_available_title">Actualización disponible</string>
+    <string name="update_available_message">Hay una nueva versión disponible.</string>
+    <string name="update_now">Actualizar ahora</string>
+    <string name="update_later">No actualizar</string>
+    <string name="update_required_title">Actualización necesaria</string>
+    <string name="update_required_message">Esta versión necesita actualizarse para seguir usándose.</string>
+    <string name="update_download_started">Descargando actualización…</string>
+    <string name="update_download_error">No se pudo iniciar la actualización</string>
+    <string name="update_install_error">No se pudo abrir el instalador de la actualización</string>
+</resources>

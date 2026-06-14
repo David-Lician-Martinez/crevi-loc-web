@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="partidas">
+        <item>PLA</item>
+        <item>CASTILLO VIEJO</item>
+        <item>MOLINOS DE MAGRO</item>
+        <item>ERMITETES</item>
+        <item>SOLANETA</item>
+        <item>GARGANTA</item>
+        <item>MARCHANTE</item>
+        <item>CACHAPETS</item>
+        <item>MONJE</item>
+        <item>RINCON DE LOS PABLOS</item>
+        <item>CASICAS</item>
+        <item>AMOROS</item>
+        <item>ALMOEXA</item>
+        <item>ALTERON DEL BOCH</item>
+        <item>AMPLA</item>
+        <item>ARQUET</item>
+        <item>BARRANCO SAN CAYETANO</item>
+        <item>BARROSA</item>
+        <item>BOCH</item>
+        <item>CACHAP</item>
+        <item>CAMINO DE CATRAL</item>
+        <item>CAMPILLOS</item>
+        <item>CAÑADA JUANA</item>
+        <item>CARGA</item>
+        <item>CEMENTERIO</item>
+        <item>COLORADA</item>
+        <item>COXIL</item>
+        <item>DERRAMADOR</item>
+        <item>DEULA</item>
+        <item>ESTACION</item>
+        <item>MANGRANERA</item>
+        <item>MANRESA</item>
+        <item>MOLINETA</item>
+        <item>MONJA</item>
+        <item>MORERES</item>
+        <item>MOTA</item>
+        <item>PALAYA</item>
+        <item>PEÑA SENDRA</item>
+        <item>RAMBLETA</item>
+        <item>SALADAR</item>
+        <item>SAN ANTONIO DE LA FLORIDA</item>
+        <item>SAN FELIPE NERI</item>
+        <item>SAN PASCUAL</item>
+        <item>VEREDA DE ORIHUELA</item>
+        <item>FRAILE</item>
+    </array>
+</resources>

@@ -1,0 +1,232 @@
+[
+  {
+    "partida": "almoexa",
+    "valid": 34,
+    "invalid": 0
+  },
+  {
+    "partida": "alteron_del_boch",
+    "valid": 5,
+    "invalid": 1
+  },
+  {
+    "partida": "amoros",
+    "valid": 55,
+    "invalid": 0
+  },
+  {
+    "partida": "ampla",
+    "valid": 25,
+    "invalid": 0
+  },
+  {
+    "partida": "arquet",
+    "valid": 72,
+    "invalid": 2
+  },
+  {
+    "partida": "barranco_san_cayetano",
+    "valid": 85,
+    "invalid": 3
+  },
+  {
+    "partida": "barrosa",
+    "valid": 177,
+    "invalid": 23
+  },
+  {
+    "partida": "boch",
+    "valid": 332,
+    "invalid": 3
+  },
+  {
+    "partida": "cachap",
+    "valid": 186,
+    "invalid": 0
+  },
+  {
+    "partida": "cachapets",
+    "valid": 148,
+    "invalid": 3
+  },
+  {
+    "partida": "camino_de_catral",
+    "valid": 46,
+    "invalid": 0
+  },
+  {
+    "partida": "campillos",
+    "valid": 159,
+    "invalid": 0
+  },
+  {
+    "partida": "canyada_juana",
+    "valid": 45,
+    "invalid": 2
+  },
+  {
+    "partida": "carga",
+    "valid": 102,
+    "invalid": 2
+  },
+  {
+    "partida": "casicas",
+    "valid": 84,
+    "invalid": 16
+  },
+  {
+    "partida": "castillo_viejo",
+    "valid": 31,
+    "invalid": 0
+  },
+  {
+    "partida": "cementerio",
+    "valid": 30,
+    "invalid": 0
+  },
+  {
+    "partida": "colorada",
+    "valid": 71,
+    "invalid": 0
+  },
+  {
+    "partida": "coxil",
+    "valid": 6,
+    "invalid": 0
+  },
+  {
+    "partida": "derramador",
+    "valid": 179,
+    "invalid": 0
+  },
+  {
+    "partida": "deula",
+    "valid": 97,
+    "invalid": 0
+  },
+  {
+    "partida": "ermitetes",
+    "valid": 16,
+    "invalid": 0
+  },
+  {
+    "partida": "estacion",
+    "valid": 36,
+    "invalid": 0
+  },
+  {
+    "partida": "fraile",
+    "valid": 37,
+    "invalid": 0
+  },
+  {
+    "partida": "garganta",
+    "valid": 3,
+    "invalid": 0
+  },
+  {
+    "partida": "mangranera",
+    "valid": 32,
+    "invalid": 2
+  },
+  {
+    "partida": "manresa",
+    "valid": 9,
+    "invalid": 0
+  },
+  {
+    "partida": "marchante",
+    "valid": 96,
+    "invalid": 1
+  },
+  {
+    "partida": "molineta",
+    "valid": 16,
+    "invalid": 0
+  },
+  {
+    "partida": "molinos_de_magro",
+    "valid": 15,
+    "invalid": 3
+  },
+  {
+    "partida": "monja",
+    "valid": 8,
+    "invalid": 0
+  },
+  {
+    "partida": "monje",
+    "valid": 44,
+    "invalid": 0
+  },
+  {
+    "partida": "moreres",
+    "valid": 18,
+    "invalid": 0
+  },
+  {
+    "partida": "mota",
+    "valid": 27,
+    "invalid": 0
+  },
+  {
+    "partida": "palaya",
+    "valid": 31,
+    "invalid": 1
+  },
+  {
+    "partida": "penya_sendra",
+    "valid": 54,
+    "invalid": 1
+  },
+  {
+    "partida": "pla",
+    "valid": 31,
+    "invalid": 3
+  },
+  {
+    "partida": "rambleta",
+    "valid": 29,
+    "invalid": 0
+  },
+  {
+    "partida": "rincon_de_los_pablos",
+    "valid": 41,
+    "invalid": 2
+  },
+  {
+    "partida": "saladar",
+    "valid": 3,
+    "invalid": 0
+  },
+  {
+    "partida": "san_antonio_de_la_florida",
+    "valid": 355,
+    "invalid": 6
+  },
+  {
+    "partida": "san_felipe_neri",
+    "valid": 90,
+    "invalid": 31
+  },
+  {
+    "partida": "san_pascual",
+    "valid": 13,
+    "invalid": 0
+  },
+  {
+    "partida": "solaneta",
+    "valid": 16,
+    "invalid": 0
+  },
+  {
+    "partida": "tahulla",
+    "valid": 69,
+    "invalid": 0
+  },
+  {
+    "partida": "vereda_de_orihuela",
+    "valid": 37,
+    "invalid": 0
+  }
+]

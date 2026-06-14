@@ -1,2 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Preserve generated reverse-engineering evidence byte-for-byte.
+legacy/reverse-engineering/** -text whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab

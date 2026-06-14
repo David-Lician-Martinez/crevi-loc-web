@@ -1,3 +1,21 @@
 node_modules/
 dist/
 .vite/
+
+# Android generated files and machine-local configuration
+android/.gradle/
+android/.kotlin/
+android/**/build/
+android/local.properties
+android/archive/
+
+# Release signing material must remain local and privately backed up
+signing/*.jks
+signing/*.keystore
+signing/*.p12
+signing/*.pfx
+signing/keystore.properties
+
+# Local release artifacts; publish historical APKs through GitHub Releases
+*.aab
+android/**/*.apk

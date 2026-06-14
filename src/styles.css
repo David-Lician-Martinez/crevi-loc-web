@@ -198,6 +198,36 @@ button.secondary {
   gap: 10px;
 }
 
+.download-links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--panel-border);
+}
+
+.download-links a {
+  color: var(--muted);
+  font-weight: 700;
+  text-align: center;
+  text-decoration-color: var(--primary-a);
+  text-underline-offset: 4px;
+}
+
+.download-links a:first-child {
+  text-align: left;
+}
+
+.download-links a:last-child {
+  text-align: right;
+}
+
+.download-links a:hover,
+.download-links a:focus-visible {
+  color: var(--text);
+}
+
 html.theme-light,
 body.theme-light {
   --bg: #ffffff;
@@ -226,5 +256,16 @@ body.theme-light {
   .theme-toggle {
     padding-top: 0;
     justify-content: space-between;
+  }
+
+  .download-links {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .download-links a,
+  .download-links a:first-child,
+  .download-links a:last-child {
+    text-align: center;
   }
 }

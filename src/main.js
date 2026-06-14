@@ -1,4 +1,5 @@
 import './styles.css';
+import { toPartidaId } from './locationKeys.js';
 
 const app = document.getElementById('app');
 const themeSwitch = document.getElementById('themeSwitch');
@@ -58,7 +59,7 @@ async function init() {
 
 function runSearch() {
   const partidaDisplay = partidaSelect.value.trim();
-  const partidaId = normalizeText(partidaDisplay).replace(/ /g, '_');
+  const partidaId = toPartidaId(partidaDisplay);
   const entries = dataset[partidaId] || [];
 
   const number = Number.parseInt(numberInput.value.trim(), 10);
@@ -151,16 +152,6 @@ function applyTheme(dark) {
 
 function loadTheme() {
   return localStorage.getItem(THEME_KEY) === 'true';
-}
-
-function normalizeText(value) {
-  return value
-    .trim()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .replace(/ñ/g, 'ny')
-    .replace(/\s+/g, ' ');
 }
 
 function escapeHtml(value) {
