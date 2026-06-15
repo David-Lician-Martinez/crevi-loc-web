@@ -194,10 +194,10 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            statusText.text = ""
+            setStatusMessage("")
             checkForUpdates()
         } catch (t: Throwable) {
-            statusText.text = "Error cargando la app: ${t.message ?: t::class.java.simpleName}"
+            setStatusMessage("Error cargando la app: ${t.message ?: t::class.java.simpleName}")
         }
     }
 
@@ -575,6 +575,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun setStatusMessage(message: String) {
+        statusText.text = message
+        statusText.visibility = if (message.isBlank()) View.GONE else View.VISIBLE
+    }
+
     private fun animateButtonPress(view: View, onPressed: () -> Unit) {
         view.animate()
             .scaleX(0.96f)
@@ -659,7 +664,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun runSearch() {
         if (!::engine.isInitialized) {
-            statusText.text = "La app no ha cargado correctamente aún"
+            setStatusMessage("La app no ha cargado correctamente aún")
             return
         }
 
@@ -669,7 +674,7 @@ class MainActivity : AppCompatActivity() {
 
         val input = engine.normalizeInput(partida, number, suffix)
         if (input.isFailure) {
-            statusText.text = input.exceptionOrNull()?.message ?: "Entrada no válida"
+            setStatusMessage(input.exceptionOrNull()?.message ?: "Entrada no válida")
             resultContainer.visibility = View.GONE
             currentEntry = null
             return
@@ -678,7 +683,7 @@ class MainActivity : AppCompatActivity() {
         val normalized = input.getOrThrow()
         currentPartidaDisplayName = normalized.partidaDisplayName
         val result = engine.search(normalized)
-        statusText.text = result.message.orEmpty()
+        setStatusMessage(result.message.orEmpty())
 
         val entry = result.entry ?: result.candidates.firstOrNull()
         if (entry == null) {

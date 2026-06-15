@@ -18,9 +18,9 @@ const [gradle, mainActivity, updateManager, manifest, filePaths, activityLayout,
   read('../public/update.json'),
 ]);
 
-test('configures Android release 1.0.8 with version code 9', () => {
-  assert.match(gradle, /versionCode\s*=\s*9/u);
-  assert.match(gradle, /versionName\s*=\s*"1\.0\.8"/u);
+test('configures Android release 1.0.9 with version code 10', () => {
+  assert.match(gradle, /versionCode\s*=\s*10/u);
+  assert.match(gradle, /versionName\s*=\s*"1\.0\.9"/u);
 });
 
 test('keeps bottom web links responsive and places Share App above the title', () => {
@@ -37,10 +37,13 @@ test('keeps bottom web links responsive and places Share App above the title', (
   assert.match(activityLayout, /android:id="@\+id\/panelContainer"[\s\S]*android:paddingTop="12dp"/u);
   assert.match(activityLayout, /android:paddingStart="22dp"/u);
   assert.match(activityLayout, /android:paddingEnd="22dp"/u);
-  assert.match(activityLayout, /android:paddingBottom="22dp"/u);
-  assert.match(activityLayout, /android:id="@\+id\/webLinksDivider"[\s\S]*android:layout_marginTop="12dp"/u);
-  assert.match(compactLinks, /android:layout_marginTop="8dp"/u);
-  assert.match(regularLinks, /android:layout_marginTop="8dp"/u);
+  assert.match(activityLayout, /android:paddingBottom="12dp"/u);
+  assert.match(activityLayout, /android:id="@\+id\/statusText"[\s\S]*android:layout_marginTop="8dp"[\s\S]*android:visibility="gone"/u);
+  assert.match(activityLayout, /android:id="@\+id\/webLinksDivider"[\s\S]*android:layout_marginTop="4dp"/u);
+  assert.match(compactLinks, /android:layout_marginTop="4dp"/u);
+  assert.match(regularLinks, /android:layout_marginTop="4dp"/u);
+  assert.match(mainActivity, /private fun setStatusMessage\(message: String\)/u);
+  assert.match(mainActivity, /statusText\.visibility = if \(message\.isBlank\(\)\) View\.GONE else View\.VISIBLE/u);
 });
 
 test('downloads the QR into the public Downloads directory', () => {
@@ -49,11 +52,11 @@ test('downloads the QR into the public Downloads directory', () => {
   assert.match(manifest, /WRITE_EXTERNAL_STORAGE/u);
 });
 
-test('publishes update metadata for Android 1.0.8', () => {
+test('publishes update metadata for Android 1.0.9', () => {
   const update = JSON.parse(updateJson);
-  assert.equal(update.versionCode, 9);
-  assert.equal(update.versionName, '1.0.8');
-  assert.equal(update.apkUrl, 'https://crevi-loc-web.pages.dev/downloads/crevi-loc.apk?v=9');
+  assert.equal(update.versionCode, 10);
+  assert.equal(update.versionName, '1.0.9');
+  assert.equal(update.apkUrl, 'https://crevi-loc-web.pages.dev/downloads/crevi-loc.apk?v=10');
 });
 
 test('downloads updates privately and opens the Android installer', () => {

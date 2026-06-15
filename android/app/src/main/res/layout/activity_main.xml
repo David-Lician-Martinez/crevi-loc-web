@@ -59,7 +59,7 @@
                     android:paddingStart="22dp"
                     android:paddingTop="12dp"
                     android:paddingEnd="22dp"
-                    android:paddingBottom="22dp">
+                    android:paddingBottom="12dp">
 
                     <TextView
                         android:id="@+id/shareAppLink"
@@ -164,9 +164,10 @@
                         android:id="@+id/statusText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="14dp"
+                        android:layout_marginTop="8dp"
                         android:text=""
-                        android:textColor="#A63A52" />
+                        android:textColor="#A63A52"
+                        android:visibility="gone" />
 
                     <LinearLayout
                         android:id="@+id/resultContainer"
@@ -220,7 +221,7 @@
                         android:id="@+id/webLinksDivider"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:layout_marginTop="12dp"
+                        android:layout_marginTop="4dp"
                         android:background="#C8D2FF" />
 
                     <include layout="@layout/web_links" />

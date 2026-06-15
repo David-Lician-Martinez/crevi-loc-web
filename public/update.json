@@ -1,8 +1,8 @@
 {
-  "versionCode": 9,
-  "versionName": "1.0.8",
-  "apkUrl": "https://crevi-loc-web.pages.dev/downloads/crevi-loc.apk?v=9",
-  "notes": "Restaurada la visualización estable del QR Web y compactado el espacio inferior",
+  "versionCode": 10,
+  "versionName": "1.0.9",
+  "apkUrl": "https://crevi-loc-web.pages.dev/downloads/crevi-loc.apk?v=10",
+  "notes": "Compactado el bloque inferior y mantenida la visualización estable del QR Web",
   "minSupportedVersionCode": 1,
-  "publishedAt": "2026-06-15T16:00:30Z"
+  "publishedAt": "2026-06-15T21:17:14Z"
 }
