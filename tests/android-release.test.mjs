@@ -48,7 +48,7 @@ test('publishes update metadata for Android 1.0.4', () => {
 
 test('adds scrollable bottom clearance above smartphone navigation', () => {
   assert.match(activityLayout, /android:id="@\+id\/scrollBottomClearance"/u);
-  assert.match(activityLayout, /android:layout_height="64dp"/u);
+  assert.match(activityLayout, /android:layout_height="32dp"/u);
 });
 
 test('shows the QR in an Android dialog with explicit back and download actions', () => {
@@ -56,6 +56,14 @@ test('shows the QR in an Android dialog with explicit back and download actions'
   assert.match(mainActivity, /setCanceledOnTouchOutside\(true\)/u);
   assert.match(mainActivity, /qrDialogBack/u);
   assert.match(mainActivity, /qrDialogDownload/u);
+});
+
+test('rounds only the displayed QR container', async () => {
+  const qrDialog = await read('../android/app/src/main/res/layout/dialog_qr.xml');
+  const qrBackground = await read('../android/app/src/main/res/drawable/qr_display_background.xml');
+  assert.match(qrDialog, /@drawable\/qr_display_background/u);
+  assert.match(qrDialog, /android:clipToOutline="true"/u);
+  assert.match(qrBackground, /<corners android:radius="16dp"/u);
 });
 
 test('explains manual installation before downloading an update', () => {
