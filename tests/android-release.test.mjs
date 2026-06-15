@@ -4,13 +4,14 @@ import test from 'node:test';
 
 const read = (path) => readFile(new URL(path, import.meta.url), 'utf8').catch(() => '');
 
-const [gradle, mainActivity, manifest, activityLayout, compactLinks, regularLinks, strings, updateJson] = await Promise.all([
+const [gradle, mainActivity, manifest, activityLayout, compactLinks, regularLinks, manualInstallDialog, strings, updateJson] = await Promise.all([
   read('../android/app/build.gradle.kts'),
   read('../android/app/src/main/java/com/alice/partidascrevillente/MainActivity.kt'),
   read('../android/app/src/main/AndroidManifest.xml'),
   read('../android/app/src/main/res/layout/activity_main.xml'),
   read('../android/app/src/main/res/layout/web_links.xml'),
   read('../android/app/src/main/res/layout-sw341dp/web_links.xml'),
+  read('../android/app/src/main/res/layout/dialog_manual_install.xml'),
   read('../android/app/src/main/res/values/strings.xml'),
   read('../public/update.json'),
 ]);
@@ -53,8 +54,13 @@ test('shows the QR in an Android dialog with explicit back and download actions'
 });
 
 test('explains manual installation before downloading an update', () => {
-  assert.match(mainActivity, /AlertDialog\.Builder/u);
-  assert.match(mainActivity, /manual_install_message/u);
+  assert.doesNotMatch(mainActivity, /AlertDialog\.Builder/u);
+  assert.match(mainActivity, /setContentView\(R\.layout\.dialog_manual_install\)/u);
+  assert.match(mainActivity, /manualInstallDialogRoot/u);
+  assert.match(mainActivity, /panel_bg_dark/u);
+  assert.match(mainActivity, /panel_bg_light/u);
+  assert.match(manualInstallDialog, /@string\/manual_install_message/u);
+  assert.match(manualInstallDialog, /@drawable\/primary_button_bg/u);
   assert.match(strings, /Tras descargarse la aplicación, deberás instalarla manualmente desde la carpeta de Descargas\./u);
 });
 

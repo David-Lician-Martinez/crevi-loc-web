@@ -24,7 +24,6 @@ import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -260,13 +259,36 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startUpdate(updateInfo: UpdateInfo) {
-        AlertDialog.Builder(this)
-            .setTitle(R.string.manual_install_title)
-            .setMessage(R.string.manual_install_message)
-            .setPositiveButton(R.string.manual_install_continue) { _, _ ->
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.dialog_manual_install)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.setCancelable(true)
+        dialog.setCanceledOnTouchOutside(true)
+
+        val root = dialog.findViewById<LinearLayout>(R.id.manualInstallDialogRoot)
+        val title = dialog.findViewById<TextView>(R.id.manualInstallDialogTitle)
+        val message = dialog.findViewById<TextView>(R.id.manualInstallDialogMessage)
+        val continueButton = dialog.findViewById<Button>(R.id.manualInstallDialogContinue)
+
+        if (isDarkTheme) {
+            root.background = ContextCompat.getDrawable(this, R.drawable.panel_bg_dark)
+            title.setTextColor(Color.parseColor("#F2F5FF"))
+            message.setTextColor(Color.parseColor("#C6D0F5"))
+        } else {
+            root.background = ContextCompat.getDrawable(this, R.drawable.panel_bg_light)
+            title.setTextColor(Color.parseColor("#1A2240"))
+            message.setTextColor(Color.parseColor("#4E5B7D"))
+        }
+
+        continueButton.setOnClickListener {
+            animateButtonPress(continueButton) {
+                dialog.dismiss()
                 updateManager.openUpdateInBrowser(updateInfo)
             }
-            .show()
+        }
+
+        dialog.show()
     }
 
     private fun applyTheme(dark: Boolean) {
