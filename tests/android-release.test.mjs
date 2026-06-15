@@ -112,6 +112,8 @@ test('rounds only the displayed QR container', async () => {
   const qrBackground = await read('../android/app/src/main/res/drawable/qr_display_background.xml');
   assert.match(qrDialog, /@drawable\/qr_display_background/u);
   assert.match(qrDialog, /android:clipToOutline="true"/u);
+  assert.match(qrDialog, /android:layout_height="wrap_content"[\s\S]*android:adjustViewBounds="true"/u);
+  assert.doesNotMatch(qrDialog, /android:layout_height="320dp"/u);
   assert.match(qrBackground, /<corners android:radius="16dp"/u);
 });
 
