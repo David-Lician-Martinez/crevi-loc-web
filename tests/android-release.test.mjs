@@ -4,7 +4,21 @@ import test from 'node:test';
 
 const read = (path) => readFile(new URL(path, import.meta.url), 'utf8').catch(() => '');
 
-const [gradle, mainActivity, updateManager, manifest, filePaths, activityLayout, compactLinks, regularLinks, manualInstallDialog, strings, updateJson, qrSquareImageView] = await Promise.all([
+const [
+  gradle,
+  mainActivity,
+  updateManager,
+  manifest,
+  filePaths,
+  activityLayout,
+  compactLinks,
+  regularLinks,
+  manualInstallDialog,
+  strings,
+  updateJson,
+  qrSquareImageView,
+  releaseUpdateJson,
+] = await Promise.all([
   read('../android/app/build.gradle.kts'),
   read('../android/app/src/main/java/com/alice/partidascrevillente/MainActivity.kt'),
   read('../android/app/src/main/java/com/alice/partidascrevillente/AppUpdateManager.kt'),
@@ -17,11 +31,12 @@ const [gradle, mainActivity, updateManager, manifest, filePaths, activityLayout,
   read('../android/app/src/main/res/values/strings.xml'),
   read('../public/update.json'),
   read('../android/app/src/main/java/com/alice/partidascrevillente/QrSquareImageView.kt'),
+  read('../release-assets/crevi-loc-update.json'),
 ]);
 
-test('configures Android release 1.0.11 with version code 12', () => {
-  assert.match(gradle, /versionCode\s*=\s*12/u);
-  assert.match(gradle, /versionName\s*=\s*"1\.0\.11"/u);
+test('configures Android release 1.0.12 with version code 13', () => {
+  assert.match(gradle, /versionCode\s*=\s*13/u);
+  assert.match(gradle, /versionName\s*=\s*"1\.0\.12"/u);
 });
 
 test('keeps bottom web links responsive and places Share App above the title', () => {
@@ -54,12 +69,32 @@ test('downloads the QR into the public Downloads directory', () => {
   assert.match(manifest, /WRITE_EXTERNAL_STORAGE/u);
 });
 
-test('publishes update metadata for Android 1.0.11', () => {
+test('publishes update metadata for Android 1.0.12', () => {
   const update = JSON.parse(updateJson);
-  assert.equal(update.versionCode, 12);
-  assert.equal(update.versionName, '1.0.11');
-  assert.equal(update.apkUrl, 'https://crevi-loc-web.pages.dev/downloads/crevi-loc.apk?v=12');
+  assert.equal(update.versionCode, 13);
+  assert.equal(update.versionName, '1.0.12');
+  assert.equal(update.apkUrl, 'https://crevi-loc-web.pages.dev/downloads/crevi-loc.apk?v=13');
   assert.match(update.notes, /Cañada Juana y Peña Sendra/u);
+});
+
+test('publishes robust GitHub release metadata for update fallback', () => {
+  const releaseUpdate = JSON.parse(releaseUpdateJson);
+  assert.equal(releaseUpdate.versionCode, 13);
+  assert.equal(releaseUpdate.versionName, '1.0.12');
+  assert.equal(releaseUpdate.apkAssetName, 'crevi-loc-1.0.12.apk');
+  assert.match(releaseUpdate.notes, /Cañada Juana y Peña Sendra/u);
+  assert.doesNotMatch(releaseUpdateJson, /crevi-loc-web\.pages\.dev\/downloads\/crevi-loc\.apk/u);
+});
+
+test('falls back to public GitHub Releases when Cloudflare update metadata fails', () => {
+  assert.match(updateManager, /GITHUB_LATEST_RELEASE_URL\s*=\s*"https:\/\/api\.github\.com\/repos\/David-Lician-Martinez\/crevi-loc-web\/releases\/latest"/u);
+  assert.match(updateManager, /GITHUB_UPDATE_ASSET_NAME\s*=\s*"crevi-loc-update\.json"/u);
+  assert.match(updateManager, /fetchCloudflareUpdateInfo\(\)/u);
+  assert.match(updateManager, /fetchGitHubReleaseUpdateInfo\(\)/u);
+  assert.match(updateManager, /recoverCatching\s*\{\s*fetchGitHubReleaseUpdateInfo\(\)\s*\}/u);
+  assert.match(updateManager, /apkAssetName/u);
+  assert.match(updateManager, /browser_download_url/u);
+  assert.match(updateManager, /User-Agent/u);
 });
 
 test('downloads updates privately and opens the Android installer', () => {

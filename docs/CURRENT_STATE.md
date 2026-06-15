@@ -8,12 +8,12 @@ Este documento resume cómo ha quedado organizada y funcionando la aplicación d
 
 La APK publica actual es:
 
-- `versionCode`: `12`
-- `versionName`: `1.0.11`
+- `versionCode`: `13`
+- `versionName`: `1.0.12`
 - Ruta pública: `public/downloads/crevi-loc.apk`
 - Metadata de actualización: `public/update.json`
 
-`update.json` apunta siempre a la APK pública de Cloudflare con un parámetro `?v=<versionCode>` para evitar cachés antiguas.
+`update.json` apunta siempre a la APK pública de Cloudflare con un parámetro `?v=<versionCode>` para evitar cachés antiguas. La app también conoce un fallback público basado en GitHub Releases.
 
 Mientras sigamos corrigiendo detalles del QR, las notas de actualización deben mencionar también las partidas añadidas:
 
@@ -128,7 +128,13 @@ La app consulta:
 https://crevi-loc-web.pages.dev/update.json
 ```
 
-Si `versionCode` remoto es mayor que el instalado, muestra la ventana de actualización.
+Si esa URL falla o devuelve metadata inválida, la app consulta:
+
+```text
+https://api.github.com/repos/David-Lician-Martinez/crevi-loc-web/releases/latest
+```
+
+En la release busca `crevi-loc-update.json`, lee el campo `apkAssetName` y resuelve la URL real de la APK adjunta a esa misma release. Si `versionCode` remoto es mayor que el instalado, muestra la ventana de actualización.
 
 Flujo principal:
 
@@ -174,20 +180,24 @@ La APK actual de Cloudflare se mantiene en `public/downloads/crevi-loc.apk`. Las
 
 Así el repositorio no acumula APK históricas en cada commit, pero sigue habiendo recuperación exacta de binarios publicados.
 
+Desde `1.0.12`, cada GitHub Release nueva debe incluir también `crevi-loc-update.json`. Ese archivo se prepara en `release-assets/crevi-loc-update.json` y debe declarar `apkAssetName` con el nombre exacto de la APK adjunta a la release.
+
 ## Flujo de publicación esperado
 
 Para cada nueva APK:
 
 1. Incrementar `versionCode` y `versionName` en `android/app/build.gradle.kts`.
 2. Actualizar `public/update.json`.
-3. Asegurar que las notas incluyen los cambios relevantes. Mientras dure esta fase, mencionar `Cañada Juana y Peña Sendra`.
-4. Ejecutar pruebas.
-5. Compilar `assembleRelease`.
-6. Verificar paquete, versión y firma.
-7. Archivar la APK pública anterior en GitHub Releases si aún no existe.
-8. Copiar la nueva APK a `public/downloads/crevi-loc.apk`.
-9. Commit y push.
-10. Verificar Cloudflare:
+3. Actualizar `release-assets/crevi-loc-update.json`.
+4. Asegurar que las notas incluyen los cambios relevantes. Mientras dure esta fase, mencionar `Cañada Juana y Peña Sendra`.
+5. Ejecutar pruebas.
+6. Compilar `assembleRelease`.
+7. Verificar paquete, versión y firma.
+8. Archivar la APK pública anterior en GitHub Releases si aún no existe.
+9. Copiar la nueva APK a `public/downloads/crevi-loc.apk`.
+10. Commit y push.
+11. Crear o actualizar la GitHub Release con la APK y `crevi-loc-update.json`.
+12. Verificar Cloudflare:
     - `update.json` remoto.
     - hash remoto de la APK igual al hash local.
 
@@ -211,9 +221,9 @@ En la última publicación se verificó:
 
 - Tests Node: `16/16`.
 - Gradle: `:app:testDebugUnitTest :app:assembleRelease`.
-- APK pública: `versionCode='12'`, `versionName='1.0.11'`.
+- APK pública: `versionCode='13'`, `versionName='1.0.12'`.
 - Firma v2 válida con el certificado oficial.
-- Cloudflare sirviendo `update.json` y APK `1.0.11`.
+- Cloudflare sirviendo `update.json` y APK `1.0.12`.
 - Hash local/remoto coincidente para la APK.
 
 ## Decisiones importantes
@@ -228,3 +238,4 @@ En la última publicación se verificó:
 - La app puede compartir su propia APK instalada mediante `Compartir App`.
 - La descarga normal de actualizaciones usa caché privado de la app y abre el instalador Android.
 - La descarga desde web queda como fallback y usa Descargas.
+- Si Cloudflare no sirve metadata de actualización, la app intenta GitHub Releases como fallback de emergencia.

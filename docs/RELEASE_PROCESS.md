@@ -58,6 +58,7 @@ Cada versión distribuida debe tener:
 - Un tag, por ejemplo `v1.1.0`.
 - Una GitHub Release asociada al tag.
 - La APK exacta adjunta como `crevi-loc-1.1.0.apk`.
+- El metadata de fallback adjunto como `crevi-loc-update.json`.
 
 Antes de sustituir la APK de Cloudflare, comprueba que la versión anterior ya está conservada en su GitHub Release. Si no lo está, descarga o copia primero `public/downloads/crevi-loc.apk` y adjúntala a la release correspondiente.
 
@@ -89,6 +90,21 @@ Actualiza `public/update.json`:
 
 El parámetro `?v=2` debe cambiar con cada publicación para evitar cachés. `publishedAt` usa UTC en formato ISO 8601.
 
+Prepara también `release-assets/crevi-loc-update.json` para GitHub Releases. Este archivo no debe apuntar a Cloudflare; debe apuntar al nombre del asset APK dentro de la propia release:
+
+```json
+{
+  "versionCode": 2,
+  "versionName": "1.1.0",
+  "apkAssetName": "crevi-loc-1.1.0.apk",
+  "notes": "Resumen breve de los cambios",
+  "minSupportedVersionCode": 1,
+  "publishedAt": "2026-06-14T18:00:00Z"
+}
+```
+
+La app usa este archivo solo si falla `https://crevi-loc-web.pages.dev/update.json`. En ese caso consulta la última release pública de GitHub, descarga `crevi-loc-update.json`, busca el asset `apkAssetName` y descarga esa APK.
+
 ## 6. Verificar la web
 
 ```powershell
@@ -111,7 +127,7 @@ Incluye en el commit el código, los cambios de versión, `public/update.json` y
 Después de revisar y subir el commit:
 
 1. Crea el tag de versión.
-2. Crea la GitHub Release y adjunta la APK exacta.
+2. Crea la GitHub Release y adjunta la APK exacta y `crevi-loc-update.json`.
 3. Deja que Cloudflare Pages despliegue `dist` desde `main`.
 4. Prueba la descarga web y la detección de actualización desde una instalación anterior.
 

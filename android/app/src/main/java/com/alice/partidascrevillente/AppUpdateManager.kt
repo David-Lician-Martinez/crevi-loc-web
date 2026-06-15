@@ -26,6 +26,8 @@ data class UpdateInfo(
 class AppUpdateManager(private val context: Context) {
     companion object {
         const val UPDATE_JSON_URL = "https://crevi-loc-web.pages.dev/update.json"
+        private const val GITHUB_LATEST_RELEASE_URL = "https://api.github.com/repos/David-Lician-Martinez/crevi-loc-web/releases/latest"
+        private const val GITHUB_UPDATE_ASSET_NAME = "crevi-loc-update.json"
         private const val PREFS_NAME = "update_state"
         private const val KEY_PENDING_VERSION = "pending_version"
     }
@@ -34,29 +36,65 @@ class AppUpdateManager(private val context: Context) {
 
     suspend fun fetchUpdateInfo(): Result<UpdateInfo> = withContext(Dispatchers.IO) {
         runCatching {
-            val connection = (URL(UPDATE_JSON_URL).openConnection() as HttpURLConnection).apply {
-                requestMethod = "GET"
-                connectTimeout = 10000
-                readTimeout = 10000
-                setRequestProperty("Accept", "application/json")
-            }
+            fetchCloudflareUpdateInfo()
+        }.recoverCatching {
+            fetchGitHubReleaseUpdateInfo()
+        }
+    }
 
-            try {
-                connection.inputStream.bufferedReader().use { reader ->
-                    val json = JSONObject(reader.readText())
-                    UpdateInfo(
-                        versionCode = json.getLong("versionCode"),
-                        versionName = json.getString("versionName"),
-                        apkUrl = json.getString("apkUrl"),
-                        notes = json.optString("notes"),
-                        minSupportedVersionCode = json.optLong("minSupportedVersionCode", json.getLong("versionCode")),
-                        publishedAt = json.optString("publishedAt")
-                    )
-                }
-            } finally {
-                connection.disconnect()
+    private fun fetchCloudflareUpdateInfo(): UpdateInfo =
+        parseUpdateInfo(fetchJsonObject(UPDATE_JSON_URL))
+
+    private fun fetchGitHubReleaseUpdateInfo(): UpdateInfo {
+        val releaseJson = fetchJsonObject(GITHUB_LATEST_RELEASE_URL)
+        val assets = releaseJson.getJSONArray("assets")
+        val metadataUrl = findReleaseAssetUrl(assets, GITHUB_UPDATE_ASSET_NAME)
+        val metadataJson = fetchJsonObject(metadataUrl)
+        val apkAssetName = metadataJson.getString("apkAssetName")
+        val apkUrl = findReleaseAssetUrl(assets, apkAssetName)
+        return parseUpdateInfo(metadataJson, apkUrl)
+    }
+
+    private fun fetchJsonObject(url: String): JSONObject {
+        val connection = (URL(url).openConnection() as HttpURLConnection).apply {
+            requestMethod = "GET"
+            connectTimeout = 10000
+            readTimeout = 10000
+            setRequestProperty("Accept", "application/json")
+            setRequestProperty("User-Agent", "Crevi-Loc-Android-Updater")
+        }
+
+        try {
+            check(connection.responseCode in 200..299) {
+                "HTTP ${connection.responseCode}"
+            }
+            return connection.inputStream.bufferedReader().use { reader ->
+                JSONObject(reader.readText())
+            }
+        } finally {
+            connection.disconnect()
+        }
+    }
+
+    private fun findReleaseAssetUrl(assets: org.json.JSONArray, assetName: String): String {
+        for (index in 0 until assets.length()) {
+            val asset = assets.getJSONObject(index)
+            if (asset.optString("name") == assetName) {
+                return asset.getString("browser_download_url")
             }
         }
+        error("Missing GitHub release asset: $assetName")
+    }
+
+    private fun parseUpdateInfo(json: JSONObject, apkUrlOverride: String? = null): UpdateInfo {
+        return UpdateInfo(
+            versionCode = json.getLong("versionCode"),
+            versionName = json.getString("versionName"),
+            apkUrl = apkUrlOverride ?: json.getString("apkUrl"),
+            notes = json.optString("notes"),
+            minSupportedVersionCode = json.optLong("minSupportedVersionCode", json.getLong("versionCode")),
+            publishedAt = json.optString("publishedAt")
+        )
     }
 
     fun getInstalledVersionCode(): Long {
