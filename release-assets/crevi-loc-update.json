@@ -1,7 +1,7 @@
 {
   "versionCode": 13,
   "versionName": "1.0.12",
-  "apkAssetName": "crevi-loc-1.0.12.apk",
+  "apkAssetName": "crevi-loc.apk",
   "notes": "Añadidas partidas Cañada Juana y Peña Sendra y añadido fallback de actualizaciones desde GitHub Releases",
   "minSupportedVersionCode": 1,
   "publishedAt": "2026-06-16T00:00:00Z"

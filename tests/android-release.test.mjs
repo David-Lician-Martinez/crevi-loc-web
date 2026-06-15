@@ -81,7 +81,7 @@ test('publishes robust GitHub release metadata for update fallback', () => {
   const releaseUpdate = JSON.parse(releaseUpdateJson);
   assert.equal(releaseUpdate.versionCode, 13);
   assert.equal(releaseUpdate.versionName, '1.0.12');
-  assert.equal(releaseUpdate.apkAssetName, 'crevi-loc-1.0.12.apk');
+  assert.equal(releaseUpdate.apkAssetName, 'crevi-loc.apk');
   assert.match(releaseUpdate.notes, /Cañada Juana y Peña Sendra/u);
   assert.doesNotMatch(releaseUpdateJson, /crevi-loc-web\.pages\.dev\/downloads\/crevi-loc\.apk/u);
 });
