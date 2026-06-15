@@ -2,6 +2,8 @@
 
 Este directorio contiene el proyecto Android nativo y mantenible de **Crevi Loc**. Fue reconstruido en Kotlin a partir de los datos recuperados de la aplicación histórica conservada en [`../legacy`](../legacy/README.md).
 
+El comportamiento actual de la app publicada, incluyendo actualizaciones internas, QR, enlaces inferiores, compartir APK y versionado, está documentado en [`../docs/CURRENT_STATE.md`](../docs/CURRENT_STATE.md).
+
 ## Requisitos en Windows
 
 - JDK 17

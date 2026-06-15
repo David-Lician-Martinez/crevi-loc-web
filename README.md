@@ -82,6 +82,8 @@ Los nombres visibles conservan la ortografía española, por ejemplo `CAÑADA JU
 
 La APK distribuida actualmente se encuentra en [`public/downloads/crevi-loc.apk`](public/downloads/crevi-loc.apk). Esa ruta debe contener una sola APK para mantener reducido el despliegue gratuito de Cloudflare.
 
+El estado funcional actual de la web, la app Android, el QR, el flujo de actualizaciones y las decisiones de diseño está resumido en [`docs/CURRENT_STATE.md`](docs/CURRENT_STATE.md).
+
 ## Publicar una actualización
 
 El procedimiento completo está en [`docs/RELEASE_PROCESS.md`](docs/RELEASE_PROCESS.md). En resumen:
