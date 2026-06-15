@@ -16,9 +16,9 @@ const [gradle, mainActivity, manifest, activityLayout, compactLinks, regularLink
   read('../public/update.json'),
 ]);
 
-test('configures Android release 1.0.3 with version code 4', () => {
-  assert.match(gradle, /versionCode\s*=\s*4/u);
-  assert.match(gradle, /versionName\s*=\s*"1\.0\.3"/u);
+test('configures Android release 1.0.4 with version code 5', () => {
+  assert.match(gradle, /versionCode\s*=\s*5/u);
+  assert.match(gradle, /versionName\s*=\s*"1\.0\.4"/u);
 });
 
 test('includes web links that only stack on truly small Android screens', () => {
@@ -35,15 +35,20 @@ test('downloads the QR into the public Downloads directory', () => {
   assert.match(manifest, /WRITE_EXTERNAL_STORAGE/u);
 });
 
-test('publishes update metadata for Android 1.0.3', () => {
+test('publishes update metadata for Android 1.0.4', () => {
   const update = JSON.parse(updateJson);
-  assert.equal(update.versionCode, 4);
-  assert.equal(update.versionName, '1.0.3');
-  assert.equal(update.apkUrl, 'https://crevi-loc-web.pages.dev/downloads/crevi-loc.apk?v=4');
+  assert.equal(update.versionCode, 5);
+  assert.equal(update.versionName, '1.0.4');
+  assert.equal(update.apkUrl, 'https://crevi-loc-web.pages.dev/downloads/crevi-loc.apk?v=5');
   assert.equal(
     update.notes,
-    'Añadida la visualización del QR Web y corregido el acceso a la web',
+    'Mejorado el desplazamiento inferior para facilitar el acceso a los enlaces web',
   );
+});
+
+test('adds scrollable bottom clearance above smartphone navigation', () => {
+  assert.match(activityLayout, /android:id="@\+id\/scrollBottomClearance"/u);
+  assert.match(activityLayout, /android:layout_height="64dp"/u);
 });
 
 test('shows the QR in an Android dialog with explicit back and download actions', () => {
