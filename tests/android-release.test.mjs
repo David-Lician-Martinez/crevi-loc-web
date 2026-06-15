@@ -4,7 +4,7 @@ import test from 'node:test';
 
 const read = (path) => readFile(new URL(path, import.meta.url), 'utf8').catch(() => '');
 
-const [gradle, mainActivity, updateManager, manifest, filePaths, activityLayout, compactLinks, regularLinks, manualInstallDialog, strings, updateJson] = await Promise.all([
+const [gradle, mainActivity, updateManager, manifest, filePaths, activityLayout, compactLinks, regularLinks, manualInstallDialog, strings, updateJson, qrSquareImageView] = await Promise.all([
   read('../android/app/build.gradle.kts'),
   read('../android/app/src/main/java/com/alice/partidascrevillente/MainActivity.kt'),
   read('../android/app/src/main/java/com/alice/partidascrevillente/AppUpdateManager.kt'),
@@ -16,11 +16,12 @@ const [gradle, mainActivity, updateManager, manifest, filePaths, activityLayout,
   read('../android/app/src/main/res/layout/dialog_manual_install.xml'),
   read('../android/app/src/main/res/values/strings.xml'),
   read('../public/update.json'),
+  read('../android/app/src/main/java/com/alice/partidascrevillente/QrSquareImageView.kt'),
 ]);
 
-test('configures Android release 1.0.10 with version code 11', () => {
-  assert.match(gradle, /versionCode\s*=\s*11/u);
-  assert.match(gradle, /versionName\s*=\s*"1\.0\.10"/u);
+test('configures Android release 1.0.11 with version code 12', () => {
+  assert.match(gradle, /versionCode\s*=\s*12/u);
+  assert.match(gradle, /versionName\s*=\s*"1\.0\.11"/u);
 });
 
 test('keeps bottom web links responsive and places Share App above the title', () => {
@@ -53,11 +54,12 @@ test('downloads the QR into the public Downloads directory', () => {
   assert.match(manifest, /WRITE_EXTERNAL_STORAGE/u);
 });
 
-test('publishes update metadata for Android 1.0.10', () => {
+test('publishes update metadata for Android 1.0.11', () => {
   const update = JSON.parse(updateJson);
-  assert.equal(update.versionCode, 11);
-  assert.equal(update.versionName, '1.0.10');
-  assert.equal(update.apkUrl, 'https://crevi-loc-web.pages.dev/downloads/crevi-loc.apk?v=11');
+  assert.equal(update.versionCode, 12);
+  assert.equal(update.versionName, '1.0.11');
+  assert.equal(update.apkUrl, 'https://crevi-loc-web.pages.dev/downloads/crevi-loc.apk?v=12');
+  assert.match(update.notes, /Cañada Juana y Peña Sendra/u);
 });
 
 test('downloads updates privately and opens the Android installer', () => {
@@ -118,20 +120,23 @@ test('shows the QR in an Android dialog with explicit back and download actions'
   assert.match(mainActivity, /qrDialogDownload/u);
 });
 
-test('shows the QR without vertical padding by deriving height from its square width', async () => {
+test('shows the QR in a measured square view to avoid rectangular display', async () => {
   const qrDialog = await read('../android/app/src/main/res/layout/dialog_qr.xml');
   const qrBackground = await read('../android/app/src/main/res/drawable/qr_display_background.xml');
-  assert.match(qrDialog, /<ImageView/u);
+  assert.match(qrDialog, /<com\.alice\.partidascrevillente\.QrSquareImageView/u);
   assert.match(qrDialog, /android:layout_width="match_parent"/u);
   assert.match(qrDialog, /android:layout_height="wrap_content"/u);
   assert.match(qrDialog, /android:maxHeight="320dp"/u);
   assert.match(qrDialog, /android:maxWidth="320dp"/u);
   assert.match(qrDialog, /android:layout_gravity="center_horizontal"/u);
   assert.match(qrDialog, /android:adjustViewBounds="true"/u);
-  assert.doesNotMatch(qrDialog, /SquareImageView/u);
+  assert.doesNotMatch(qrDialog, /<ImageView/u);
   assert.match(qrDialog, /@drawable\/qr_display_background/u);
   assert.match(qrDialog, /android:clipToOutline="true"/u);
   assert.match(qrBackground, /<corners android:radius="16dp"/u);
+  assert.match(qrSquareImageView, /class QrSquareImageView/u);
+  assert.match(qrSquareImageView, /override fun onMeasure/u);
+  assert.match(qrSquareImageView, /setMeasuredDimension\(size, size\)/u);
 });
 
 test('uses the styled manual-installation warning only for the web fallback', () => {
