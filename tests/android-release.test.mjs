@@ -4,7 +4,7 @@ import test from 'node:test';
 
 const read = (path) => readFile(new URL(path, import.meta.url), 'utf8').catch(() => '');
 
-const [gradle, mainActivity, updateManager, manifest, filePaths, activityLayout, compactLinks, regularLinks, manualInstallDialog, strings, updateJson] = await Promise.all([
+const [gradle, mainActivity, updateManager, manifest, filePaths, activityLayout, compactLinks, regularLinks, manualInstallDialog, strings, updateJson, squareImageView] = await Promise.all([
   read('../android/app/build.gradle.kts'),
   read('../android/app/src/main/java/com/alice/partidascrevillente/MainActivity.kt'),
   read('../android/app/src/main/java/com/alice/partidascrevillente/AppUpdateManager.kt'),
@@ -16,11 +16,12 @@ const [gradle, mainActivity, updateManager, manifest, filePaths, activityLayout,
   read('../android/app/src/main/res/layout/dialog_manual_install.xml'),
   read('../android/app/src/main/res/values/strings.xml'),
   read('../public/update.json'),
+  read('../android/app/src/main/java/com/alice/partidascrevillente/SquareImageView.kt'),
 ]);
 
-test('configures Android release 1.0.6 with version code 7', () => {
-  assert.match(gradle, /versionCode\s*=\s*7/u);
-  assert.match(gradle, /versionName\s*=\s*"1\.0\.6"/u);
+test('configures Android release 1.0.7 with version code 8', () => {
+  assert.match(gradle, /versionCode\s*=\s*8/u);
+  assert.match(gradle, /versionName\s*=\s*"1\.0\.7"/u);
 });
 
 test('keeps bottom web links responsive and places Share App above the title', () => {
@@ -34,6 +35,10 @@ test('keeps bottom web links responsive and places Share App above the title', (
   assert.doesNotMatch(regularLinks, /shareAppLink/u);
   assert.ok(activityLayout.indexOf('@+id/shareAppLink') < activityLayout.indexOf('@+id/titleText'));
   assert.match(activityLayout, /android:id="@\+id\/shareAppLink"[\s\S]*android:layout_gravity="end"/u);
+  assert.match(activityLayout, /android:id="@\+id\/panelContainer"[\s\S]*android:paddingTop="12dp"/u);
+  assert.match(activityLayout, /android:paddingStart="22dp"/u);
+  assert.match(activityLayout, /android:paddingEnd="22dp"/u);
+  assert.match(activityLayout, /android:paddingBottom="22dp"/u);
 });
 
 test('downloads the QR into the public Downloads directory', () => {
@@ -42,11 +47,11 @@ test('downloads the QR into the public Downloads directory', () => {
   assert.match(manifest, /WRITE_EXTERNAL_STORAGE/u);
 });
 
-test('publishes update metadata for Android 1.0.6', () => {
+test('publishes update metadata for Android 1.0.7', () => {
   const update = JSON.parse(updateJson);
-  assert.equal(update.versionCode, 7);
-  assert.equal(update.versionName, '1.0.6');
-  assert.equal(update.apkUrl, 'https://crevi-loc-web.pages.dev/downloads/crevi-loc.apk?v=7');
+  assert.equal(update.versionCode, 8);
+  assert.equal(update.versionName, '1.0.7');
+  assert.equal(update.apkUrl, 'https://crevi-loc-web.pages.dev/downloads/crevi-loc.apk?v=8');
 });
 
 test('downloads updates privately and opens the Android installer', () => {
@@ -107,13 +112,15 @@ test('shows the QR in an Android dialog with explicit back and download actions'
   assert.match(mainActivity, /qrDialogDownload/u);
 });
 
-test('rounds only the displayed QR container', async () => {
+test('shows the QR in a full-width square view with rounded edges', async () => {
   const qrDialog = await read('../android/app/src/main/res/layout/dialog_qr.xml');
   const qrBackground = await read('../android/app/src/main/res/drawable/qr_display_background.xml');
+  assert.match(qrDialog, /com\.alice\.partidascrevillente\.SquareImageView/u);
+  assert.match(qrDialog, /android:layout_width="match_parent"/u);
   assert.match(qrDialog, /@drawable\/qr_display_background/u);
   assert.match(qrDialog, /android:clipToOutline="true"/u);
-  assert.match(qrDialog, /android:layout_height="wrap_content"[\s\S]*android:adjustViewBounds="true"/u);
-  assert.doesNotMatch(qrDialog, /android:layout_height="320dp"/u);
+  assert.match(squareImageView, /class SquareImageView/u);
+  assert.match(squareImageView, /setMeasuredDimension\(measuredWidth, measuredWidth\)/u);
   assert.match(qrBackground, /<corners android:radius="16dp"/u);
 });
 
