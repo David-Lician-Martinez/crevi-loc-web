@@ -53,5 +53,14 @@ test('explains manual installation before downloading an update', () => {
 
 test('shows the current app version at the bottom right', () => {
   assert.match(activityLayout, /@\+id\/versionText/u);
+  assert.match(activityLayout, /android:layout_marginEnd="24dp"/u);
   assert.match(mainActivity, /versionText\.text\s*=\s*"v\$\{BuildConfig\.VERSION_NAME\}"/u);
+  assert.match(mainActivity, /versionText\.setTextColor\(Color\.WHITE\)/u);
+  assert.match(mainActivity, /versionText\.setTextColor\(Color\.BLACK\)/u);
+});
+
+test('matches the Android navigation bar to the selected theme', () => {
+  assert.match(mainActivity, /window\.navigationBarColor\s*=\s*Color\.BLACK/u);
+  assert.match(mainActivity, /isAppearanceLightNavigationBars\s*=\s*false/u);
+  assert.match(mainActivity, /isAppearanceLightNavigationBars\s*=\s*true/u);
 });

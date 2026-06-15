@@ -27,6 +27,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 
@@ -272,6 +273,9 @@ class MainActivity : AppCompatActivity() {
         isDarkTheme = dark
 
         if (dark) {
+            window.navigationBarColor = Color.BLACK
+            WindowInsetsControllerCompat(window, window.decorView)
+                .isAppearanceLightNavigationBars = false
             rootContainer.setBackgroundColor(Color.parseColor("#000000"))
             panelContainer.background = ContextCompat.getDrawable(this, R.drawable.panel_bg_dark)
             themeLabel.text = "Tema oscuro"
@@ -296,8 +300,11 @@ class MainActivity : AppCompatActivity() {
             webLinksDivider.setBackgroundColor(Color.parseColor("#3E4A78"))
             accessWebLink.setTextColor(Color.parseColor("#B8C2EA"))
             downloadQrLink.setTextColor(Color.parseColor("#B8C2EA"))
-            versionText.setTextColor(Color.parseColor("#7F8AB5"))
+            versionText.setTextColor(Color.WHITE)
         } else {
+            window.navigationBarColor = Color.WHITE
+            WindowInsetsControllerCompat(window, window.decorView)
+                .isAppearanceLightNavigationBars = true
             rootContainer.setBackgroundColor(Color.parseColor("#FFFFFF"))
             panelContainer.background = ContextCompat.getDrawable(this, R.drawable.panel_bg_light)
             themeLabel.text = "Tema claro"
@@ -322,7 +329,7 @@ class MainActivity : AppCompatActivity() {
             webLinksDivider.setBackgroundColor(Color.parseColor("#C8D2FF"))
             accessWebLink.setTextColor(Color.parseColor("#5D6888"))
             downloadQrLink.setTextColor(Color.parseColor("#5D6888"))
-            versionText.setTextColor(Color.parseColor("#7A849E"))
+            versionText.setTextColor(Color.BLACK)
         }
 
         updateSpinnerTextColor()
