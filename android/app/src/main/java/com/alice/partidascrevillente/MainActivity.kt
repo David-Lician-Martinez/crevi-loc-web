@@ -66,7 +66,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var searchButton: Button
     private lateinit var openMapsButton: Button
     private lateinit var shareButton: Button
-    private lateinit var webLinksDivider: View
     private lateinit var accessWebLink: TextView
     private lateinit var downloadQrLink: TextView
     private lateinit var shareAppLink: TextView
@@ -128,7 +127,6 @@ class MainActivity : AppCompatActivity() {
         searchButton = findViewById(R.id.searchButton)
         openMapsButton = findViewById(R.id.openMapsButton)
         shareButton = findViewById(R.id.shareButton)
-        webLinksDivider = findViewById(R.id.webLinksDivider)
         accessWebLink = findViewById(R.id.accessWebLink)
         downloadQrLink = findViewById(R.id.downloadQrLink)
         shareAppLink = findViewById(R.id.shareAppLink)
@@ -524,7 +522,6 @@ class MainActivity : AppCompatActivity() {
             resultCoords.setTextColor(Color.parseColor("#C6D0F5"))
             shareButton.background = ContextCompat.getDrawable(this, R.drawable.secondary_button_bg_dark)
             shareButton.setTextColor(Color.parseColor("#F2F5FF"))
-            webLinksDivider.setBackgroundColor(Color.parseColor("#3E4A78"))
             accessWebLink.setTextColor(Color.parseColor("#B8C2EA"))
             downloadQrLink.setTextColor(Color.parseColor("#B8C2EA"))
             shareAppLink.setTextColor(Color.parseColor("#B8C2EA"))
@@ -554,7 +551,6 @@ class MainActivity : AppCompatActivity() {
             resultCoords.setTextColor(Color.parseColor("#4E5B7D"))
             shareButton.background = ContextCompat.getDrawable(this, R.drawable.secondary_button_bg_light)
             shareButton.setTextColor(Color.parseColor("#33406A"))
-            webLinksDivider.setBackgroundColor(Color.parseColor("#C8D2FF"))
             accessWebLink.setTextColor(Color.parseColor("#5D6888"))
             downloadQrLink.setTextColor(Color.parseColor("#5D6888"))
             shareAppLink.setTextColor(Color.parseColor("#5D6888"))

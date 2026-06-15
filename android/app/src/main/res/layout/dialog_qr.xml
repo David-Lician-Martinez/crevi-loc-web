@@ -17,12 +17,15 @@
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="320dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:layout_marginTop="18dp"
         android:adjustViewBounds="true"
         android:background="@drawable/qr_display_background"
         android:clipToOutline="true"
         android:contentDescription="@string/qr_download_title"
+        android:maxWidth="320dp"
+        android:maxHeight="320dp"
         android:scaleType="fitCenter"
         android:src="@drawable/crevi_loc_web_qr" />
 
