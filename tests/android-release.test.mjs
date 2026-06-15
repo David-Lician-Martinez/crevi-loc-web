@@ -18,20 +18,22 @@ const [gradle, mainActivity, updateManager, manifest, filePaths, activityLayout,
   read('../public/update.json'),
 ]);
 
-test('configures Android release 1.0.5 with version code 6', () => {
-  assert.match(gradle, /versionCode\s*=\s*6/u);
-  assert.match(gradle, /versionName\s*=\s*"1\.0\.5"/u);
+test('configures Android release 1.0.6 with version code 7', () => {
+  assert.match(gradle, /versionCode\s*=\s*7/u);
+  assert.match(gradle, /versionName\s*=\s*"1\.0\.6"/u);
 });
 
-test('includes web links that only stack on truly small Android screens', () => {
+test('keeps bottom web links responsive and places Share App above the title', () => {
   assert.match(activityLayout, /layout="@layout\/web_links"/u);
   assert.match(compactLinks, /android:orientation="vertical"/u);
   assert.match(regularLinks, /android:orientation="horizontal"/u);
   assert.match(strings, /<string name="access_web">Accede a la Web<\/string>/u);
   assert.match(strings, /<string name="show_web_qr">Mostrar QR Web<\/string>/u);
   assert.match(strings, /<string name="share_app">Compartir App<\/string>/u);
-  assert.match(compactLinks, /android:id="@\+id\/shareAppLink"[\s\S]*android:gravity="center"/u);
-  assert.match(regularLinks, /android:id="@\+id\/shareAppLink"/u);
+  assert.doesNotMatch(compactLinks, /shareAppLink/u);
+  assert.doesNotMatch(regularLinks, /shareAppLink/u);
+  assert.ok(activityLayout.indexOf('@+id/shareAppLink') < activityLayout.indexOf('@+id/titleText'));
+  assert.match(activityLayout, /android:id="@\+id\/shareAppLink"[\s\S]*android:layout_gravity="end"/u);
 });
 
 test('downloads the QR into the public Downloads directory', () => {
@@ -40,15 +42,11 @@ test('downloads the QR into the public Downloads directory', () => {
   assert.match(manifest, /WRITE_EXTERNAL_STORAGE/u);
 });
 
-test('publishes update metadata for Android 1.0.5', () => {
+test('publishes update metadata for Android 1.0.6', () => {
   const update = JSON.parse(updateJson);
-  assert.equal(update.versionCode, 6);
-  assert.equal(update.versionName, '1.0.5');
-  assert.equal(update.apkUrl, 'https://crevi-loc-web.pages.dev/downloads/crevi-loc.apk?v=6');
-  assert.equal(
-    update.notes,
-    'Añadida la instalación asistida de actualizaciones y la opción de compartir la app',
-  );
+  assert.equal(update.versionCode, 7);
+  assert.equal(update.versionName, '1.0.6');
+  assert.equal(update.apkUrl, 'https://crevi-loc-web.pages.dev/downloads/crevi-loc.apk?v=7');
 });
 
 test('downloads updates privately and opens the Android installer', () => {
@@ -63,6 +61,30 @@ test('downloads updates privately and opens the Android installer', () => {
 test('cleans temporary update APKs after installation', () => {
   assert.match(updateManager, /cleanupDownloadedUpdate/u);
   assert.match(mainActivity, /updateManager\.cleanupDownloadedUpdate\(\)/u);
+  assert.match(updateManager, /apk\.name\.endsWith\("\.part\.apk"\)/u);
+});
+
+test('resumes a valid pending update and remembers missing pending downloads', () => {
+  assert.match(updateManager, /findValidDownloadedUpdate/u);
+  assert.match(updateManager, /markUpdatePending/u);
+  assert.match(updateManager, /wasUpdatePending/u);
+  assert.match(updateManager, /packageName\s*!=\s*context\.packageName/u);
+  assert.match(mainActivity, /showPendingInstallDialog/u);
+  assert.match(mainActivity, /showPendingDownloadDialog/u);
+  assert.match(strings, /<string name="continue_installation">Continuar instalación<\/string>/u);
+  assert.match(strings, /<string name="download_update">Descargar actualización<\/string>/u);
+});
+
+test('starts the normal update without the manual installation dialog', () => {
+  assert.match(mainActivity, /private fun startUpdate\(updateInfo: UpdateInfo\)\s*\{\s*downloadAndInstallUpdate\(updateInfo\)\s*\}/u);
+});
+
+test('offers a web fallback only after a private download failure', () => {
+  assert.match(mainActivity, /\.onFailure\s*\{\s*showDownloadFailureDialog\(updateInfo\)/u);
+  assert.match(mainActivity, /showWebDownloadWarning/u);
+  assert.match(mainActivity, /openWebDestination\(updateInfo\.apkUrl\)/u);
+  assert.match(strings, /<string name="download_from_web">Descargar desde la web<\/string>/u);
+  assert.match(strings, /Tras la descarga tendrás que instalar la aplicación manualmente desde la carpeta de Descargas\./u);
 });
 
 test('shares a temporary copy of the installed APK', () => {
@@ -93,15 +115,16 @@ test('rounds only the displayed QR container', async () => {
   assert.match(qrBackground, /<corners android:radius="16dp"/u);
 });
 
-test('explains manual installation before downloading an update', () => {
+test('uses the styled manual-installation warning only for the web fallback', () => {
   assert.doesNotMatch(mainActivity, /AlertDialog\.Builder/u);
+  assert.match(mainActivity, /private fun showWebDownloadWarning/u);
   assert.match(mainActivity, /setContentView\(R\.layout\.dialog_manual_install\)/u);
   assert.match(mainActivity, /manualInstallDialogRoot/u);
   assert.match(mainActivity, /panel_bg_dark/u);
   assert.match(mainActivity, /panel_bg_light/u);
   assert.match(manualInstallDialog, /@string\/manual_install_message/u);
   assert.match(manualInstallDialog, /@drawable\/primary_button_bg/u);
-  assert.match(strings, /Tras descargarse la aplicación, se abrirá el instalador de Android para que confirmes la actualización\./u);
+  assert.match(strings, /Tras la descarga tendrás que instalar la aplicación manualmente desde la carpeta de Descargas\./u);
 });
 
 test('shows the current app version at the bottom right', () => {

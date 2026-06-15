@@ -59,6 +59,18 @@
                     android:padding="22dp">
 
                     <TextView
+                        android:id="@+id/shareAppLink"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_gravity="end"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center_vertical|end"
+                        android:text="@string/share_app"
+                        android:textColor="#5D6888"
+                        android:textStyle="bold" />
+
+                    <TextView
                         android:id="@+id/titleText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

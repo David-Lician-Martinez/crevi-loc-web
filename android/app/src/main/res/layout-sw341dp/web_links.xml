@@ -30,16 +30,4 @@
         android:textColor="#5D6888"
         android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/shareAppLink"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:layout_weight="1"
-        android:clickable="true"
-        android:focusable="true"
-        android:gravity="center"
-        android:text="@string/share_app"
-        android:textColor="#5D6888"
-        android:textStyle="bold" />
-
 </LinearLayout>

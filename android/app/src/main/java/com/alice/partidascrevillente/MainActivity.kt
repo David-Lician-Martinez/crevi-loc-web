@@ -76,6 +76,9 @@ class MainActivity : AppCompatActivity() {
     private var currentPartidaDisplayName: String = ""
     private var isDarkTheme: Boolean = false
     private var pendingUpdateFile: File? = null
+    private var latestUpdateInfo: UpdateInfo? = null
+    private var installerOpened = false
+    private var recoveryDialog: Dialog? = null
 
     private val installPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -83,9 +86,9 @@ class MainActivity : AppCompatActivity() {
         val canInstall = Build.VERSION.SDK_INT < Build.VERSION_CODES.O ||
             packageManager.canRequestPackageInstalls()
         if (canInstall) {
-            pendingUpdateFile?.takeIf { it.isFile }?.let { updateManager.openInstaller(it) }
+            pendingUpdateFile?.takeIf { it.isFile }?.let { openPendingInstaller(it) }
         } else {
-            Toast.makeText(this, R.string.update_install_error, Toast.LENGTH_LONG).show()
+            latestUpdateInfo?.let { showPendingInstallDialog(it) }
         }
     }
 
@@ -199,8 +202,24 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        recoveryDialog?.dismiss()
         updateManager.unregisterReceiverSafely()
         super.onDestroy()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (installerOpened) {
+            installerOpened = false
+            latestUpdateInfo?.let { updateInfo ->
+                if (updateManager.hasUpdate(updateInfo)) {
+                    updateManager.findValidDownloadedUpdate(updateInfo)?.let { apkFile ->
+                        pendingUpdateFile = apkFile
+                        showPendingInstallDialog(updateInfo)
+                    }
+                }
+            }
+        }
     }
 
     private fun checkForUpdates() {
@@ -208,7 +227,16 @@ class MainActivity : AppCompatActivity() {
             val updateResult = updateManager.fetchUpdateInfo()
             updateResult.onSuccess { updateInfo ->
                 if (updateManager.hasUpdate(updateInfo)) {
-                    showUpdateDialog(updateInfo)
+                    latestUpdateInfo = updateInfo
+                    val cachedUpdate = updateManager.findValidDownloadedUpdate(updateInfo)
+                    when {
+                        cachedUpdate != null -> {
+                            pendingUpdateFile = cachedUpdate
+                            showPendingInstallDialog(updateInfo)
+                        }
+                        updateManager.wasUpdatePending(updateInfo) -> showPendingDownloadDialog(updateInfo)
+                        else -> showUpdateDialog(updateInfo)
+                    }
                 }
             }
         }
@@ -282,6 +310,100 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startUpdate(updateInfo: UpdateInfo) {
+        downloadAndInstallUpdate(updateInfo)
+    }
+
+    private fun showPendingInstallDialog(updateInfo: UpdateInfo) {
+        showUpdateActionDialog(
+            titleText = getString(R.string.pending_install_title),
+            messageText = getString(R.string.pending_install_message),
+            positiveText = getString(R.string.continue_installation)
+        ) {
+            val apkFile = updateManager.findValidDownloadedUpdate(updateInfo)
+            if (apkFile == null) {
+                showPendingDownloadDialog(updateInfo)
+            } else {
+                pendingUpdateFile = apkFile
+                requestInstaller(apkFile)
+            }
+        }
+    }
+
+    private fun showPendingDownloadDialog(updateInfo: UpdateInfo) {
+        showUpdateActionDialog(
+            titleText = getString(R.string.pending_update_title),
+            messageText = getString(R.string.pending_update_missing_message),
+            positiveText = getString(R.string.download_update)
+        ) {
+            downloadAndInstallUpdate(updateInfo)
+        }
+    }
+
+    private fun showDownloadFailureDialog(updateInfo: UpdateInfo) {
+        showUpdateActionDialog(
+            titleText = getString(R.string.update_download_failed_title),
+            messageText = getString(R.string.update_download_failed_message),
+            positiveText = getString(R.string.download_from_web)
+        ) {
+            showWebDownloadWarning(updateInfo)
+        }
+    }
+
+    private fun showUpdateActionDialog(
+        titleText: String,
+        messageText: String,
+        positiveText: String,
+        onPositive: () -> Unit
+    ) {
+        recoveryDialog?.dismiss()
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.dialog_update)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.setCancelable(true)
+        dialog.setCanceledOnTouchOutside(true)
+
+        val root = dialog.findViewById<LinearLayout>(R.id.updateDialogRoot)
+        val title = dialog.findViewById<TextView>(R.id.updateDialogTitle)
+        val message = dialog.findViewById<TextView>(R.id.updateDialogMessage)
+        val positiveButton = dialog.findViewById<Button>(R.id.updateDialogPositiveButton)
+        val negativeButton = dialog.findViewById<Button>(R.id.updateDialogNegativeButton)
+
+        title.text = titleText
+        message.text = messageText
+        positiveButton.text = positiveText
+        negativeButton.text = getString(R.string.cancel)
+
+        if (isDarkTheme) {
+            root.background = ContextCompat.getDrawable(this, R.drawable.panel_bg_dark)
+            title.setTextColor(Color.parseColor("#F2F5FF"))
+            message.setTextColor(Color.parseColor("#C6D0F5"))
+            negativeButton.background = ContextCompat.getDrawable(this, R.drawable.secondary_button_bg_dark)
+            negativeButton.setTextColor(Color.parseColor("#F2F5FF"))
+        } else {
+            root.background = ContextCompat.getDrawable(this, R.drawable.panel_bg_light)
+            title.setTextColor(Color.parseColor("#1A2240"))
+            message.setTextColor(Color.parseColor("#4E5B7D"))
+            negativeButton.background = ContextCompat.getDrawable(this, R.drawable.secondary_button_bg_light)
+            negativeButton.setTextColor(Color.parseColor("#33406A"))
+        }
+
+        positiveButton.setOnClickListener {
+            animateButtonPress(positiveButton) {
+                dialog.dismiss()
+                onPositive()
+            }
+        }
+        negativeButton.setOnClickListener { dialog.dismiss() }
+        dialog.setOnDismissListener {
+            if (recoveryDialog === dialog) recoveryDialog = null
+        }
+
+        recoveryDialog = dialog
+        dialog.show()
+    }
+
+    private fun showWebDownloadWarning(updateInfo: UpdateInfo) {
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setContentView(R.layout.dialog_manual_install)
@@ -307,10 +429,9 @@ class MainActivity : AppCompatActivity() {
         continueButton.setOnClickListener {
             animateButtonPress(continueButton) {
                 dialog.dismiss()
-                downloadAndInstallUpdate(updateInfo)
+                openWebDestination(updateInfo.apkUrl)
             }
         }
-
         dialog.show()
     }
 
@@ -320,23 +441,32 @@ class MainActivity : AppCompatActivity() {
             updateManager.downloadUpdate(updateInfo)
                 .onSuccess { apkFile ->
                     pendingUpdateFile = apkFile
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
-                        !packageManager.canRequestPackageInstalls()
-                    ) {
-                        installPermissionLauncher.launch(
-                            Intent(
-                                Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
-                                Uri.parse("package:$packageName")
-                            )
-                        )
-                    } else {
-                        updateManager.openInstaller(apkFile)
-                    }
+                    requestInstaller(apkFile)
                 }
                 .onFailure {
-                    Toast.makeText(this@MainActivity, R.string.update_download_error, Toast.LENGTH_LONG).show()
+                    showDownloadFailureDialog(updateInfo)
                 }
         }
+    }
+
+    private fun requestInstaller(apkFile: File) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+            !packageManager.canRequestPackageInstalls()
+        ) {
+            installPermissionLauncher.launch(
+                Intent(
+                    Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                    Uri.parse("package:$packageName")
+                )
+            )
+        } else {
+            openPendingInstaller(apkFile)
+        }
+    }
+
+    private fun openPendingInstaller(apkFile: File) {
+        installerOpened = true
+        updateManager.openInstaller(apkFile)
     }
 
     private fun shareInstalledApp() {

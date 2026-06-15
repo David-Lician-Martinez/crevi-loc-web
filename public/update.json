@@ -1,8 +1,8 @@
 {
-  "versionCode": 6,
-  "versionName": "1.0.5",
-  "apkUrl": "https://crevi-loc-web.pages.dev/downloads/crevi-loc.apk?v=6",
-  "notes": "Añadida la instalación asistida de actualizaciones y la opción de compartir la app",
+  "versionCode": 7,
+  "versionName": "1.0.6",
+  "apkUrl": "https://crevi-loc-web.pages.dev/downloads/crevi-loc.apk?v=7",
+  "notes": "Mejorado el flujo de instalación y recuperación de actualizaciones",
   "minSupportedVersionCode": 1,
-  "publishedAt": "2026-06-15T02:30:00Z"
+  "publishedAt": "2026-06-15T15:40:00Z"
 }
