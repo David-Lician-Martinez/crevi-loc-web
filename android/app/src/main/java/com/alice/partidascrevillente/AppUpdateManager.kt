@@ -5,9 +5,11 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import androidx.core.content.FileProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
+import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -74,11 +76,49 @@ class AppUpdateManager(private val context: Context) {
 
     fun isUpdateMandatory(updateInfo: UpdateInfo): Boolean = getInstalledVersionCode() < updateInfo.minSupportedVersionCode
 
-    fun openUpdateInBrowser(updateInfo: UpdateInfo) {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(updateInfo.apkUrl)).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    suspend fun downloadUpdate(updateInfo: UpdateInfo): Result<File> = withContext(Dispatchers.IO) {
+        runCatching {
+            val updateDirectory = File(context.cacheDir, "updates").apply { mkdirs() }
+            val target = File(updateDirectory, "crevi-loc-${updateInfo.versionCode}.apk")
+            val connection = (URL(updateInfo.apkUrl).openConnection() as HttpURLConnection).apply {
+                requestMethod = "GET"
+                connectTimeout = 15000
+                readTimeout = 30000
+            }
+            try {
+                connection.inputStream.use { input ->
+                    target.outputStream().use { output -> input.copyTo(output) }
+                }
+            } finally {
+                connection.disconnect()
+            }
+            target
+        }
+    }
+
+    fun openInstaller(apkFile: File) {
+        val apkUri = FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.fileprovider",
+            apkFile
+        )
+        val intent = Intent(Intent.ACTION_INSTALL_PACKAGE, apkUri).apply {
+            setDataAndType(apkUri, "application/vnd.android.package-archive")
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
         }
         context.startActivity(intent)
+    }
+
+    fun cleanupDownloadedUpdate() {
+        val updateDirectory = File(context.cacheDir, "updates")
+        updateDirectory.listFiles()?.forEach { apk ->
+            val archiveInfo = context.packageManager.getPackageArchiveInfo(apk.absolutePath, 0)
+            val archiveVersion = archiveInfo?.let {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) it.longVersionCode
+                else @Suppress("DEPRECATION") it.versionCode.toLong()
+            }
+            if (archiveVersion == null || archiveVersion <= getInstalledVersionCode()) apk.delete()
+        }
     }
 
     fun unregisterReceiverSafely() {

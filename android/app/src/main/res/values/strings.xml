@@ -12,6 +12,7 @@
     <string name="update_install_error">No se pudo abrir el instalador de la actualización</string>
     <string name="access_web">Accede a la Web</string>
     <string name="show_web_qr">Mostrar QR Web</string>
+    <string name="share_app">Compartir App</string>
     <string name="qr_dialog_back">Atrás</string>
     <string name="qr_dialog_download">Descargar QR</string>
     <string name="qr_download_title">QR de Crevi Loc Web</string>
@@ -19,6 +20,8 @@
     <string name="qr_download_started">Descarga del QR iniciada</string>
     <string name="storage_permission_denied">No se concedió permiso para guardar el QR</string>
     <string name="manual_install_title">Instalación manual</string>
-    <string name="manual_install_message">Tras descargarse la aplicación, deberás instalarla manualmente desde la carpeta de Descargas.</string>
+    <string name="manual_install_message">Tras descargarse la aplicación, se abrirá el instalador de Android para que confirmes la actualización.</string>
     <string name="manual_install_continue">Entendido</string>
+    <string name="share_app_chooser">Compartir App</string>
+    <string name="share_app_error">No se pudo preparar la aplicación para compartir</string>
 </resources>

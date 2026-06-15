@@ -13,6 +13,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.provider.Settings
 import android.view.View
 import android.view.Window
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -26,9 +27,13 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.File
 
 class MainActivity : AppCompatActivity() {
     private lateinit var partidaAdapter: ThemeAwareSpinnerAdapter
@@ -64,11 +69,25 @@ class MainActivity : AppCompatActivity() {
     private lateinit var webLinksDivider: View
     private lateinit var accessWebLink: TextView
     private lateinit var downloadQrLink: TextView
+    private lateinit var shareAppLink: TextView
     private lateinit var versionText: TextView
 
     private var currentEntry: AddressEntry? = null
     private var currentPartidaDisplayName: String = ""
     private var isDarkTheme: Boolean = false
+    private var pendingUpdateFile: File? = null
+
+    private val installPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        val canInstall = Build.VERSION.SDK_INT < Build.VERSION_CODES.O ||
+            packageManager.canRequestPackageInstalls()
+        if (canInstall) {
+            pendingUpdateFile?.takeIf { it.isFile }?.let { updateManager.openInstaller(it) }
+        } else {
+            Toast.makeText(this, R.string.update_install_error, Toast.LENGTH_LONG).show()
+        }
+    }
 
     private val storagePermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -85,6 +104,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         updateManager = AppUpdateManager(this)
+        updateManager.cleanupDownloadedUpdate()
 
         rootContainer = findViewById(R.id.rootContainer)
         panelContainer = findViewById(R.id.panelContainer)
@@ -108,13 +128,16 @@ class MainActivity : AppCompatActivity() {
         webLinksDivider = findViewById(R.id.webLinksDivider)
         accessWebLink = findViewById(R.id.accessWebLink)
         downloadQrLink = findViewById(R.id.downloadQrLink)
+        shareAppLink = findViewById(R.id.shareAppLink)
         versionText = findViewById(R.id.versionText)
         versionText.text = "v${BuildConfig.VERSION_NAME}"
 
         accessWebLink.paintFlags = accessWebLink.paintFlags or Paint.UNDERLINE_TEXT_FLAG
         downloadQrLink.paintFlags = downloadQrLink.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+        shareAppLink.paintFlags = shareAppLink.paintFlags or Paint.UNDERLINE_TEXT_FLAG
         accessWebLink.setOnClickListener { openWebDestination(WebDestinations.WEB_URL) }
         downloadQrLink.setOnClickListener { showQrDialog() }
+        shareAppLink.setOnClickListener { shareInstalledApp() }
 
         val savedDarkTheme = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             .getBoolean(KEY_DARK_THEME, false)
@@ -284,11 +307,63 @@ class MainActivity : AppCompatActivity() {
         continueButton.setOnClickListener {
             animateButtonPress(continueButton) {
                 dialog.dismiss()
-                updateManager.openUpdateInBrowser(updateInfo)
+                downloadAndInstallUpdate(updateInfo)
             }
         }
 
         dialog.show()
+    }
+
+    private fun downloadAndInstallUpdate(updateInfo: UpdateInfo) {
+        Toast.makeText(this, R.string.update_download_started, Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch {
+            updateManager.downloadUpdate(updateInfo)
+                .onSuccess { apkFile ->
+                    pendingUpdateFile = apkFile
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+                        !packageManager.canRequestPackageInstalls()
+                    ) {
+                        installPermissionLauncher.launch(
+                            Intent(
+                                Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                                Uri.parse("package:$packageName")
+                            )
+                        )
+                    } else {
+                        updateManager.openInstaller(apkFile)
+                    }
+                }
+                .onFailure {
+                    Toast.makeText(this@MainActivity, R.string.update_download_error, Toast.LENGTH_LONG).show()
+                }
+        }
+    }
+
+    private fun shareInstalledApp() {
+        lifecycleScope.launch {
+            runCatching {
+                val shareFile = withContext(Dispatchers.IO) {
+                    val directory = File(cacheDir, "shared-apk").apply { mkdirs() }
+                    File(applicationInfo.sourceDir).copyTo(
+                        File(directory, "crevi-loc-${BuildConfig.VERSION_NAME}.apk"),
+                        overwrite = true
+                    )
+                }
+                val uri = FileProvider.getUriForFile(
+                    this@MainActivity,
+                    "$packageName.fileprovider",
+                    shareFile
+                )
+                val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                    type = "application/vnd.android.package-archive"
+                    putExtra(Intent.EXTRA_STREAM, uri)
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+                startActivity(Intent.createChooser(shareIntent, getString(R.string.share_app_chooser)))
+            }.onFailure {
+                Toast.makeText(this@MainActivity, R.string.share_app_error, Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
     private fun applyTheme(dark: Boolean) {
@@ -322,6 +397,7 @@ class MainActivity : AppCompatActivity() {
             webLinksDivider.setBackgroundColor(Color.parseColor("#3E4A78"))
             accessWebLink.setTextColor(Color.parseColor("#B8C2EA"))
             downloadQrLink.setTextColor(Color.parseColor("#B8C2EA"))
+            shareAppLink.setTextColor(Color.parseColor("#B8C2EA"))
             versionText.setTextColor(Color.WHITE)
         } else {
             window.navigationBarColor = Color.WHITE
@@ -351,6 +427,7 @@ class MainActivity : AppCompatActivity() {
             webLinksDivider.setBackgroundColor(Color.parseColor("#C8D2FF"))
             accessWebLink.setTextColor(Color.parseColor("#5D6888"))
             downloadQrLink.setTextColor(Color.parseColor("#5D6888"))
+            shareAppLink.setTextColor(Color.parseColor("#5D6888"))
             versionText.setTextColor(Color.BLACK)
         }
 
