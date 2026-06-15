@@ -1,8 +1,8 @@
 {
-  "versionCode": 3,
-  "versionName": "1.0.2",
-  "apkUrl": "https://crevi-loc-web.pages.dev/downloads/crevi-loc.apk?v=3",
-  "notes": "Añadidas partidas Cañada Juana y Peña Sendra y facilitación del acceso a la web",
+  "versionCode": 4,
+  "versionName": "1.0.3",
+  "apkUrl": "https://crevi-loc-web.pages.dev/downloads/crevi-loc.apk?v=4",
+  "notes": "Añadida la visualización del QR Web y corregido el acceso a la web",
   "minSupportedVersionCode": 1,
-  "publishedAt": "2026-06-14T23:30:00Z"
+  "publishedAt": "2026-06-15T00:30:00Z"
 }

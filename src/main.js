@@ -14,6 +14,9 @@ const resultTitle = document.getElementById('resultTitle');
 const resultCoords = document.getElementById('resultCoords');
 const openMapsButton = document.getElementById('openMapsButton');
 const shareButton = document.getElementById('shareButton');
+const showQrButton = document.getElementById('showQrButton');
+const qrDialog = document.getElementById('qrDialog');
+const qrDialogBack = document.getElementById('qrDialogBack');
 
 const THEME_KEY = 'crevi-loc-theme-dark';
 
@@ -55,6 +58,15 @@ async function init() {
     window.location.href = buildMapsUrl(currentEntry);
   });
   shareButton.addEventListener('click', shareCurrent);
+  showQrButton.addEventListener('click', () => qrDialog.showModal());
+  qrDialogBack.addEventListener('click', () => qrDialog.close());
+  qrDialog.addEventListener('click', (event) => {
+    if (event.target !== qrDialog) return;
+    const bounds = qrDialog.getBoundingClientRect();
+    const outside = event.clientX < bounds.left || event.clientX > bounds.right ||
+      event.clientY < bounds.top || event.clientY > bounds.bottom;
+    if (outside) qrDialog.close();
+  });
 }
 
 function runSearch() {

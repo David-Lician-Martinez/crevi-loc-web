@@ -26,7 +26,7 @@
         android:clickable="true"
         android:focusable="true"
         android:gravity="center_vertical|end"
-        android:text="@string/download_web_qr"
+        android:text="@string/show_web_qr"
         android:textColor="#5D6888"
         android:textStyle="bold" />
 

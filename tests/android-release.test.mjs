@@ -15,9 +15,9 @@ const [gradle, mainActivity, manifest, activityLayout, compactLinks, regularLink
   read('../public/update.json'),
 ]);
 
-test('configures Android release 1.0.2 with version code 3', () => {
-  assert.match(gradle, /versionCode\s*=\s*3/u);
-  assert.match(gradle, /versionName\s*=\s*"1\.0\.2"/u);
+test('configures Android release 1.0.3 with version code 4', () => {
+  assert.match(gradle, /versionCode\s*=\s*4/u);
+  assert.match(gradle, /versionName\s*=\s*"1\.0\.3"/u);
 });
 
 test('includes web links that only stack on truly small Android screens', () => {
@@ -25,7 +25,7 @@ test('includes web links that only stack on truly small Android screens', () => 
   assert.match(compactLinks, /android:orientation="vertical"/u);
   assert.match(regularLinks, /android:orientation="horizontal"/u);
   assert.match(strings, /<string name="access_web">Accede a la Web<\/string>/u);
-  assert.match(strings, /<string name="download_web_qr">Descarga el QR Web<\/string>/u);
+  assert.match(strings, /<string name="show_web_qr">Mostrar QR Web<\/string>/u);
 });
 
 test('downloads the QR into the public Downloads directory', () => {
@@ -34,15 +34,22 @@ test('downloads the QR into the public Downloads directory', () => {
   assert.match(manifest, /WRITE_EXTERNAL_STORAGE/u);
 });
 
-test('publishes update metadata for Android 1.0.2', () => {
+test('publishes update metadata for Android 1.0.3', () => {
   const update = JSON.parse(updateJson);
-  assert.equal(update.versionCode, 3);
-  assert.equal(update.versionName, '1.0.2');
-  assert.equal(update.apkUrl, 'https://crevi-loc-web.pages.dev/downloads/crevi-loc.apk?v=3');
+  assert.equal(update.versionCode, 4);
+  assert.equal(update.versionName, '1.0.3');
+  assert.equal(update.apkUrl, 'https://crevi-loc-web.pages.dev/downloads/crevi-loc.apk?v=4');
   assert.equal(
     update.notes,
-    'Añadidas partidas Cañada Juana y Peña Sendra y facilitación del acceso a la web',
+    'Añadida la visualización del QR Web y corregido el acceso a la web',
   );
+});
+
+test('shows the QR in an Android dialog with explicit back and download actions', () => {
+  assert.match(mainActivity, /setContentView\(R\.layout\.dialog_qr\)/u);
+  assert.match(mainActivity, /setCanceledOnTouchOutside\(true\)/u);
+  assert.match(mainActivity, /qrDialogBack/u);
+  assert.match(mainActivity, /qrDialogDownload/u);
 });
 
 test('explains manual installation before downloading an update', () => {

@@ -115,7 +115,7 @@ class MainActivity : AppCompatActivity() {
         accessWebLink.paintFlags = accessWebLink.paintFlags or Paint.UNDERLINE_TEXT_FLAG
         downloadQrLink.paintFlags = downloadQrLink.paintFlags or Paint.UNDERLINE_TEXT_FLAG
         accessWebLink.setOnClickListener { openWebDestination(WebDestinations.WEB_URL) }
-        downloadQrLink.setOnClickListener { downloadWebQr() }
+        downloadQrLink.setOnClickListener { showQrDialog() }
 
         val savedDarkTheme = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             .getBoolean(KEY_DARK_THEME, false)
@@ -366,6 +366,36 @@ class MainActivity : AppCompatActivity() {
 
     private fun openWebDestination(url: String) {
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+    }
+
+    private fun showQrDialog() {
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.dialog_qr)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.setCancelable(true)
+        dialog.setCanceledOnTouchOutside(true)
+
+        val root = dialog.findViewById<LinearLayout>(R.id.qrDialogRoot)
+        val title = dialog.findViewById<TextView>(R.id.qrDialogTitle)
+        val backButton = dialog.findViewById<Button>(R.id.qrDialogBack)
+        val downloadButton = dialog.findViewById<Button>(R.id.qrDialogDownload)
+
+        if (isDarkTheme) {
+            root.background = ContextCompat.getDrawable(this, R.drawable.panel_bg_dark)
+            title.setTextColor(Color.WHITE)
+            backButton.background = ContextCompat.getDrawable(this, R.drawable.secondary_button_bg_dark)
+            backButton.setTextColor(Color.WHITE)
+        } else {
+            root.background = ContextCompat.getDrawable(this, R.drawable.panel_bg_light)
+            title.setTextColor(Color.BLACK)
+            backButton.background = ContextCompat.getDrawable(this, R.drawable.secondary_button_bg_light)
+            backButton.setTextColor(Color.parseColor("#33406A"))
+        }
+
+        backButton.setOnClickListener { dialog.dismiss() }
+        downloadButton.setOnClickListener { downloadWebQr() }
+        dialog.show()
     }
 
     private fun downloadWebQr() {

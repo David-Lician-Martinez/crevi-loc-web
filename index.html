@@ -52,10 +52,19 @@
 
         <nav class="download-links" aria-label="Descargas">
           <a href="./downloads/crevi-loc.apk" download>Descarga la App</a>
-          <a href="./downloads/crevi-loc-web-qr.png" download>Descarga el QR Web</a>
+          <button id="showQrButton" type="button">Mostrar QR Web</button>
         </nav>
       </main>
     </div>
+
+    <dialog id="qrDialog" class="qr-dialog" aria-labelledby="qrDialogTitle">
+      <h2 id="qrDialogTitle">QR de Crevi Loc Web</h2>
+      <img src="./downloads/crevi-loc-web-qr.png" alt="Código QR para acceder a Crevi Loc Web" />
+      <div class="qr-dialog-actions">
+        <button id="qrDialogBack" class="secondary" type="button">Atrás</button>
+        <a class="primary" href="./downloads/crevi-loc-web-qr.png" download>Descargar QR</a>
+      </div>
+    </dialog>
 
     <script type="module" src="./src/main.js"></script>
   </body>
