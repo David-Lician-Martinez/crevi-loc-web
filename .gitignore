@@ -19,3 +19,13 @@ signing/keystore.properties
 # Local release artifacts; publish historical APKs through GitHub Releases
 *.aab
 android/**/*.apk
+
+# Local private source material. These files may contain conversations,
+# phone numbers, addresses, or other personal data and must never be pushed.
+local-private/**
+!local-private/
+!local-private/README.md
+!local-private/whatsapp/
+!local-private/whatsapp/README.md
+!local-private/whatsapp/telepizza-crevillente/
+!local-private/whatsapp/telepizza-crevillente/README.md
